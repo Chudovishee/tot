@@ -1,0 +1,22 @@
+{
+  "name": "tot-backend",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/migrate.js && node index.js",
+    "dev": "node ./src/migrate.js && node --inspect=0.0.0.0 index.js",
+    "lint": "eslint --ext .js src"
+  },
+  "dependencies": {
+    "express": "^4.16.1",
+    "winston": "^3.0.0-rc3",
+    "config": "^1.27",
+    "lowdb": "^1.0.0",
+    "cookie-parser": "^1.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0"
+  }
+}
