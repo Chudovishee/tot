@@ -1,9 +1,13 @@
 const config = require('config');
+const express = require('express');
+const secure = require('../services/secure');
 
 const version = config.get('version');
 
-function getVersion(req, res) {
-  res.json({ version });
-}
+const router = express.Router();
 
-module.exports = getVersion;
+router.get('/', secure.ALL, (req, res) => {
+  res.json({ version });
+});
+
+module.exports = router;

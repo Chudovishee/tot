@@ -25,3 +25,5 @@ typings/
 .env
 sftp-config.json
 .directory
+data
+local.json

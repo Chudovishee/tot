@@ -5,8 +5,8 @@ const migrates = require('./migrates');
 async function upMigration(from, to, db) {
   while (from < to) {
     if (migrates[from] && migrates[from].up) {
-      from += 1;
       await migrates[from].up(db);
+      from += 1;
       await db.set('version', from).write();
     }
     else {
@@ -18,8 +18,8 @@ async function upMigration(from, to, db) {
 async function downMigration(from, to, db) {
   while (from > to) {
     if (migrates[from - 1] && migrates[from - 1].down) {
-      from -= 1;
       await migrates[from - 1].down(db);
+      from -= 1;
       await db.set('version', from).write();
     }
     else {

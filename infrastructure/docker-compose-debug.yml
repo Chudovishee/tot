@@ -23,6 +23,7 @@ services:
       - ./backend/log:/var/log/backend
       - ./backend/data:/var/lib/backend
       - ../backend/src:/usr/src/backend/src
+      - ../backend/test:/usr/src/backend/test
     ports:
       - "8081:80"
       - "9229:9229"

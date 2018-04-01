@@ -6,7 +6,8 @@
     "start": "npm run migrate && node index.js",
     "migrate": "node ./src/migrate.js",
     "dev": "npm run lint && npm run migrate && node --inspect=0.0.0.0 index.js",
-    "lint": "eslint --ext .js src"
+    "lint": "eslint --ext .js src test",
+    "test": "LOG_LEVEL=error ./node_modules/.bin/mocha"
   },
   "dependencies": {
     "express": "^4.16.1",
@@ -20,6 +21,11 @@
   "devDependencies": {
     "eslint": "^4.19.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.9.0"
+    "eslint-plugin-import": "^2.9.0",
+    "sinon": "^4.0.0",
+    "sinon-chai": "^2.8.0",
+    "mocha": "^3.2.0",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0"
   }
 }
