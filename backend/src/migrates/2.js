@@ -1,4 +1,3 @@
-
 module.exports = {
   up(db) {
     return db

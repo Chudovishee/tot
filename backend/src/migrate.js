@@ -1,12 +1,13 @@
-const db = require('./services/db');
+const dbAdapter = require('./services/db');
 const logger = require('./services/logger');
 const migrates = require('./migrates');
 
-async function upMigration (from, to, db) {
+async function upMigration(from, to, db) {
   while (from < to) {
     if (migrates[from] && migrates[from].up) {
+      from += 1;
       await migrates[from].up(db);
-      await db.set('version', ++from).write();
+      await db.set('version', from).write();
     }
     else {
       throw new Error(`Migration from ${from} to ${from + 1} not exist`);
@@ -14,11 +15,12 @@ async function upMigration (from, to, db) {
   }
 }
 
-async function downMigration (from, to, db) {
+async function downMigration(from, to, db) {
   while (from > to) {
     if (migrates[from - 1] && migrates[from - 1].down) {
+      from -= 1;
       await migrates[from - 1].down(db);
-      await db.set('version', --from).write();
+      await db.set('version', from).write();
     }
     else {
       throw new Error(`Migration from ${from} to ${from - 1} not exist`);
@@ -26,7 +28,7 @@ async function downMigration (from, to, db) {
   }
 }
 
-db.then(async (db) => {
+dbAdapter.then(async (db) => {
   const targetVersion = parseInt(process.argv[2], 10) || migrates.length;
   let version = db.get('version')
     .value();
@@ -51,7 +53,7 @@ db.then(async (db) => {
     logger.info(`db already have ${targetVersion} version, nothing to do`);
   }
 })
-.catch((error) => {
-  logger.error(error);
-  throw error;
-})
+  .catch((error) => {
+    logger.error(error);
+    throw error;
+  });

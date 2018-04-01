@@ -7,7 +7,7 @@ const logger = require('./services/logger');
 const version = require('./api/version');
 const user = require('./api/user');
 const csrfService = require('./services/csrf');
-const db = require('./services/db');
+const dbAdapter = require('./services/db');
 const userService = require('./services/user');
 
 const host = config.get('host');
@@ -16,7 +16,7 @@ const apiPrefix = config.get('api_prefix');
 
 const backendApp = express();
 
-db.then((db) => {
+dbAdapter.then((db) => {
   backendApp.use(csrfService);
   backendApp.use(bodyParser.json());
   backendApp.use(cookieParser());

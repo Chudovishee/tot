@@ -7,10 +7,9 @@ RUN mkdir -p /var/log/backend
 WORKDIR /usr/src/backend
 
 COPY ./package.json .
+COPY ./config /etc/backend
 RUN npm install
 
-COPY ./config /etc/backend
-COPY ./index.js .
-COPY ./src ./src
+COPY . .
 
 ENTRYPOINT ["npm", "start"]
