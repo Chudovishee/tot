@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+
 chai.use(chaiHttp);
 
 function apiRequest(app) {
@@ -14,8 +15,8 @@ function apiRequest(app) {
         .post(url)
         .set('x-requested-with', 'XMLHttpRequest')
         .set('content-type', 'application/json');
-      }
     }
+  };
 }
 
 module.exports = apiRequest;

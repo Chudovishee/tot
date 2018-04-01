@@ -13,7 +13,7 @@ const host = config.get('host');
 const port = config.get('port');
 const apiPrefix = config.get('api_prefix');
 
-function server(db) {
+function Server(db) {
   const app = express();
   app.use(csrfService);
   app.use(bodyParser.json());
@@ -32,4 +32,4 @@ function server(db) {
   };
 }
 
-module.exports = server;
+module.exports = Server;

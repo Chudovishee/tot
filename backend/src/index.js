@@ -1,6 +1,6 @@
 const dbAdapter = require('./services/db');
-const server = require('./server');
+const Server = require('./server');
 
 dbAdapter.then((db) => {
-  server(db);
+  Server(db);
 });

@@ -5,9 +5,9 @@
   "scripts": {
     "start": "npm run migrate && node index.js",
     "migrate": "node ./src/migrate.js",
-    "dev": "npm run lint && npm run migrate && node --inspect=0.0.0.0 index.js",
+    "dev": "NODE_ENV=development npm run lint && npm run migrate && node --inspect=0.0.0.0 index.js",
     "lint": "eslint --ext .js src test",
-    "test": "LOG_LEVEL=error ./node_modules/.bin/mocha"
+    "test": "LOG_LEVEL=error npm run lint && ./node_modules/.bin/mocha"
   },
   "dependencies": {
     "express": "^4.16.1",
@@ -16,7 +16,8 @@
     "lowdb": "^1.0.0",
     "cookie-parser": "^1.4.3",
     "lodash": "^4.17.5",
-    "body-parser": "^1.18.2"
+    "body-parser": "^1.18.2",
+    "validate.js": "^0.12.0"
   },
   "devDependencies": {
     "eslint": "^4.19.0",

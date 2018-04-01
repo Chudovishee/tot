@@ -1,13 +1,14 @@
 const Base = require('lowdb/adapters/Base');
+const _ = require('lodash');
 
 class TestAdapter extends Base {
   read() {
-    return Promise.resolve(this.defaultValue);
+    return Promise.resolve(_.cloneDeep(this.defaultValue));
   }
 
-  write(data) {
+  write() {
     return Promise.resolve();
   }
 }
 
-module.exports = TestAdapter
+module.exports = TestAdapter;

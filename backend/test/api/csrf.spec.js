@@ -1,9 +1,9 @@
 const chai = require('chai');
-const assert = require('chai').assert;
+const { assert } = require('chai');
 const chaiHttp = require('chai-http');
 const low = require('lowdb');
 
-const adapter = require('../utils/testAdapter');
+const Adapter = require('../utils/testAdapter');
 const Server = require('../../src/server');
 
 chai.use(chaiHttp);
@@ -11,12 +11,10 @@ chai.use(chaiHttp);
 describe('csrf', async () => {
   let serverData;
 
-  before(async () => {
-    serverData = Server(await low(new adapter()));
+  before(() => {
+    serverData = Server(low(new Adapter()));
   });
-  after(() => {
-    return serverData.server.close();
-  });
+  after(() => serverData.server.close());
 
   it('positive', async () => {
     await chai.request(serverData.app)
@@ -32,7 +30,7 @@ describe('csrf', async () => {
       .set('content-type', 'application/json')
       .then((res) => {
         // page not found, but if csrf failed, then return 400
-        assert.equal(res.status, 404);        
+        assert.equal(res.status, 404);
       });
 
     await chai.request(serverData.app)
@@ -41,7 +39,7 @@ describe('csrf', async () => {
       .set('content-type', 'application/json')
       .then((res) => {
         // page not found, but if csrf failed, then return 400
-        assert.equal(res.status, 404);        
+        assert.equal(res.status, 404);
       });
   });
 
@@ -49,7 +47,7 @@ describe('csrf', async () => {
     await chai.request(serverData.app)
       .get('/api/version')
       .then((res) => {
-        assert.equal(res.status, 400);        
+        assert.equal(res.status, 400);
       });
 
     await chai.request(serverData.app)

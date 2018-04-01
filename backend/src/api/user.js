@@ -1,33 +1,45 @@
-const _ = require('lodash');
-const crypto = require('crypto');
 const express = require('express');
 const config = require('config');
-const sha256 = require('../utils/sha256');
+
 const logger = require('../services/logger');
 const secure = require('../services/secure');
+const User = require('../models/user');
 
-function publishUser(user) {
-  return _.pick(user, ['id', 'name', 'token_expire', 'access']);
-}
+// function userValidator(user) {
+//   return validate(user, {
+//     name: {
+//       presence: true,
+//       format: {
+//         pattern: /^[\w]{4,20}$/,
+//         message: 'user name must be string with 4-20 characters'
+//       }
+//     },
+//     password: {
+//       presence: true,
+//       length: {
+//         minimum: 6,
+//         maximum: 32
+//       }
+//     },
+//     access: {
+//       presence: true,
+//       exclusion: {
+//         within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
+//       }
+//     }
+//   });
+// }
 
 function userApi(db) {
   const cookieMaxAge = config.get('user_token_max_age');
   const router = express.Router();
 
-  // curl -D - -H "x-requested-with:XMLHttpRequest" -H "Content-Type: application/json" -X POST -d '{"password":"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"}'  http://127.0.0.1:8080/api/user/admin/login
   router.post('/:user/login', secure.ALL, async (req, res) => {
-    let user = db.get('users')
-      .find({ name: req.params.user, password: sha256(String(req.body.password)) });
+    const user = User(db).fetch(req.params.user);
 
-    if (user.value()) {
-      const accessToken = crypto.randomBytes(32).toString('hex');
+    const accessToken = await user.login(req.body.password);
 
-      await user.assign({
-        token: accessToken,
-        token_expire: Date.now() + cookieMaxAge
-      })
-        .write();
-
+    if (accessToken) {
       res.cookie('access-token', accessToken, {
         maxAge: cookieMaxAge,
         httpOnly: true
@@ -36,44 +48,61 @@ function userApi(db) {
       res.status(200)
         .json({ token: accessToken });
 
-      user = user.value();
-      logger.info(`success login, user: ${user.name}(${user.id})`);
+      logger.info(`success login, user: ${user.name}`);
     }
     else {
       res.status(403).end();
-      logger.info(`fail login, user: ${req.params.user}`);
+      logger.info(`fail login, user: ${user.name}`);
     }
   });
 
   router.post('/logout', secure.USER, async (req, res) => {
-    await db.get('users')
-      .find({ id: req.user.id })
-      .assign({
-        token: false,
-        token_expire: 0
-      })
-      .write();
+    await User(db).fetch(req.user.name).logout();
 
     res.status(200).end();
     logger.info(`success logout, user: ${req.user.name}(${req.user.id})`);
   });
 
   router.get('/', secure.USER, (req, res) => {
-    res.json(publishUser(req.user));
+    res.json(User().assign(req.user).publish());
   });
 
   router.get('/:user', secure.ADMIN, (req, res) => {
-    const user = db.get('users')
-      .find({ name: req.params.user })
-      .value();
+    const user = User(db).fetch(req.params.user);
 
-    if (user) {
-      res.json(publishUser(user));
+    if (user.value()) {
+      res.json(user.publish());
     }
     else {
       res.status(404).end();
     }
   });
+
+  // router.post('/', secure.ADMIN, async (req, res) => {
+  //   const newUser = req.body;
+
+  //   let validatorErrors = userValidator(newUser);
+
+  //   if (Object.keys(validatorErrors).length === 0 &&
+  //     db.get('users').find({ name: req.body.name }).value()) {
+  //     validatorErrors = {
+  //       name: [`user with name "${req.body.name}" already exist`]
+  //     };
+  //   }
+
+  //   if (Object.keys(validatorErrors).length === 0) {
+  //     await db.get('users')
+  //       .push({
+  //         name: newUser.name,
+  //         password: sha256(newUser.password),
+  //         access: newUser.access,
+  //         token: false
+  //       })
+  //       .write();
+  //   }
+
+  //   res.status(200).end();
+  // });
 
   return router;
 }
