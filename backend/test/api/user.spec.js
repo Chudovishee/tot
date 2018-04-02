@@ -168,17 +168,87 @@ describe('user api', async () => {
       });
   });
 
-  // it('post user', async () => {
-  //   await request(serverData.app)
-  //     .post('/api/user')
-  //     .set('access-token', getUserToken(db, 'admin'))
-  //     .send({
-  //       name: 'new_user',
-  //       password: 'new_password',
-  //       access: 1
-  //     })
-  //     .then((res) => {
-  //       assert.equal(res.status, 200);
-  //     });
-  // });
+  it('post user', async () => {
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        name: 'new_user',
+        password: 'new_password',
+        access: 1
+      })
+      .then((res) => {
+        assert.equal(res.status, 200);
+
+        const dbUser = db.get('users')
+          .find({ name: 'new_user' })
+          .value();
+
+        assert.equal(dbUser.name, 'new_user');
+        assert.exists(dbUser.password);
+        assert.notEqual(dbUser.password, 'new_password');
+        assert.equal(dbUser.access, 1);
+        assert.exists(dbUser.token);
+        assert.exists(dbUser.token_expire);
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        name: '+_+_+',
+        password: '123',
+        access: 10
+      })
+      .then((res) => {
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, {
+          name: ['Name user name must be string with 4-20 characters'],
+          access: ['10 is not included in the list']
+        });
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        name: 'asdfghjklqwertyuiopzxcvbnmasdfghjkqwertyuisdfgherasdfghjklqwertyuiopzxcvbnmasdfghjkqwertyuisdfgher',
+        password: '1234567890123456789012345678901234567890',
+        access: 1
+      })
+      .then((res) => {
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, {
+          name: ['Name user name must be string with 4-20 characters'],
+        });
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({})
+      .then((res) => {
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, {
+          name: ['Name can\'t be blank'],
+          password: ['Password can\'t be blank'],
+          access: ['Access can\'t be blank']
+        });
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        name: 'admin',
+        password: 'new_password',
+        access: 1
+      })
+      .then((res) => {
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, {
+          name: ['User with name "admin" already exists'],
+        });
+      });
+  });
 });

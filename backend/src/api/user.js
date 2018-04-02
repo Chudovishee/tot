@@ -5,31 +5,6 @@ const logger = require('../services/logger');
 const secure = require('../services/secure');
 const User = require('../models/user');
 
-// function userValidator(user) {
-//   return validate(user, {
-//     name: {
-//       presence: true,
-//       format: {
-//         pattern: /^[\w]{4,20}$/,
-//         message: 'user name must be string with 4-20 characters'
-//       }
-//     },
-//     password: {
-//       presence: true,
-//       length: {
-//         minimum: 6,
-//         maximum: 32
-//       }
-//     },
-//     access: {
-//       presence: true,
-//       exclusion: {
-//         within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
-//       }
-//     }
-//   });
-// }
-
 function userApi(db) {
   const cookieMaxAge = config.get('user_token_max_age');
   const router = express.Router();
@@ -78,31 +53,19 @@ function userApi(db) {
     }
   });
 
-  // router.post('/', secure.ADMIN, async (req, res) => {
-  //   const newUser = req.body;
+  router.post('/', secure.ADMIN, async (req, res) => {
+    const user = User(db).assign(req.body);
+    const errors = user.validate();
 
-  //   let validatorErrors = userValidator(newUser);
-
-  //   if (Object.keys(validatorErrors).length === 0 &&
-  //     db.get('users').find({ name: req.body.name }).value()) {
-  //     validatorErrors = {
-  //       name: [`user with name "${req.body.name}" already exist`]
-  //     };
-  //   }
-
-  //   if (Object.keys(validatorErrors).length === 0) {
-  //     await db.get('users')
-  //       .push({
-  //         name: newUser.name,
-  //         password: sha256(newUser.password),
-  //         access: newUser.access,
-  //         token: false
-  //       })
-  //       .write();
-  //   }
-
-  //   res.status(200).end();
-  // });
+    if (!errors || Object.keys(errors).length === 0) {
+      await user.push();
+      res.status(200).end();
+    }
+    else {
+      res.status(400)
+        .json(errors);
+    }
+  });
 
   return router;
 }
