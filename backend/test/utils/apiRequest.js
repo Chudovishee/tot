@@ -15,6 +15,12 @@ function apiRequest(app) {
         .post(url)
         .set('x-requested-with', 'XMLHttpRequest')
         .set('content-type', 'application/json');
+    },
+    put(url) {
+      return chai.request(app)
+        .put(url)
+        .set('x-requested-with', 'XMLHttpRequest')
+        .set('content-type', 'application/json');
     }
   };
 }

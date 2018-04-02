@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const low = require('lowdb');
 const { assert } = require('chai');
 
@@ -175,7 +176,8 @@ describe('user api', async () => {
       .send({
         name: 'new_user',
         password: 'new_password',
-        access: 1
+        access: 1,
+        more: 'more'
       })
       .then((res) => {
         assert.equal(res.status, 200);
@@ -190,6 +192,7 @@ describe('user api', async () => {
         assert.equal(dbUser.access, 1);
         assert.exists(dbUser.token);
         assert.exists(dbUser.token_expire);
+        assert.notExists(dbUser.more);
       });
 
     await request(serverData.app)
@@ -249,6 +252,111 @@ describe('user api', async () => {
         assert.deepEqual(res.body, {
           name: ['User with name "admin" already exists'],
         });
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .set('access-token', getUserToken(db, 'user'))
+      .send({
+        name: 'new_user',
+        password: 'new_password',
+        access: 1
+      })
+      .then((res) => {
+        assert.equal(res.status, 403);
+      });
+
+    await request(serverData.app)
+      .post('/api/user')
+      .send({
+        name: 'new_user',
+        password: 'new_password',
+        access: 1
+      })
+      .then((res) => {
+        assert.equal(res.status, 403);
+      });
+  });
+
+  it('post user', async () => {
+    const oldRecord = _.cloneDeep(db.get('users')
+      .find({ name: 'user' })
+      .value());
+
+    await request(serverData.app)
+      .put('/api/user/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        name: 'new_user',
+        password: 'new_password',
+        access: 3,
+        more: 'more'
+      })
+      .then((res) => {
+        assert.equal(res.status, 200);
+
+        const newRecord = db.get('users')
+          .find({ name: 'user' })
+          .value();
+
+        assert.exists(newRecord.password);
+        assert.notEqual(newRecord.password, 'new_password');
+        assert.notEqual(newRecord.password, oldRecord.password);
+        assert.equal(newRecord.access, 3);
+        assert.exists(newRecord.token);
+        assert.exists(newRecord.token_expire);
+        assert.notExists(newRecord.more);
+      });
+
+    await request(serverData.app)
+      .put('/api/user/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        access: 10
+      })
+      .then((res) => {
+        assert.equal(res.status, 400);
+        assert.deepEqual(res.body, {
+          access: ['10 is not included in the list']
+        });
+      });
+
+    await request(serverData.app)
+      .put('/api/user/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({})
+      .then((res) => {
+        assert.equal(res.status, 200);
+      });
+
+    await request(serverData.app)
+      .put('/api/user/user_not_exists')
+      .set('access-token', getUserToken(db, 'admin'))
+      .send({
+        password: 'new_password',
+        access: 3
+      })
+      .then((res) => {
+        assert.equal(res.status, 404);
+      });
+
+    await request(serverData.app)
+      .put('/api/user/admin')
+      .set('access-token', getUserToken(db, 'user'))
+      .send({
+        password: 'new_password'
+      })
+      .then((res) => {
+        assert.equal(res.status, 403);
+      });
+
+    await request(serverData.app)
+      .put('/api/user/admin')
+      .send({
+        password: 'new_password'
+      })
+      .then((res) => {
+        assert.equal(res.status, 403);
       });
   });
 });

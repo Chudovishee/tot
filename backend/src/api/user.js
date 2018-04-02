@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const config = require('config');
 
@@ -54,8 +55,8 @@ function userApi(db) {
   });
 
   router.post('/', secure.ADMIN, async (req, res) => {
-    const user = User(db).assign(req.body);
-    const errors = user.validate();
+    const user = User(db).assign(_.pick(req.body, ['name', 'password', 'access']));
+    const errors = user.createValidate();
 
     if (!errors || Object.keys(errors).length === 0) {
       await user.push();
@@ -64,6 +65,28 @@ function userApi(db) {
     else {
       res.status(400)
         .json(errors);
+    }
+  });
+
+  router.put('/:user', secure.ADMIN, async (req, res) => {
+    const user = User(db).fetch(req.params.user);
+
+    if (user.value()) {
+      const newUser = User().assign({ name: req.params.user }, _.pick(req.body, ['password', 'access']));
+      const errors = newUser.editValidate();
+
+      if (!errors || Object.keys(errors).length === 0) {
+        await user.assign(newUser.value())
+          .write();
+        res.status(200).end();
+      }
+      else {
+        res.status(400)
+          .json(errors);
+      }
+    }
+    else {
+      res.status(404).end();
     }
   });
 
