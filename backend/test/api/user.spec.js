@@ -58,7 +58,7 @@ describe('user api', async () => {
     await request(serverData.app)
       .post('/api/user/logout')
       .then((res) => {
-        assert.equal(res.status, 403);
+        assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
       });
 
@@ -75,7 +75,7 @@ describe('user api', async () => {
       .post('/api/user/logout')
       .set('access-token', initToken)
       .then((res) => {
-        assert.equal(res.status, 403);
+        assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
       });
 
@@ -108,7 +108,7 @@ describe('user api', async () => {
     await request(serverData.app)
       .get('/api/user')
       .then((res) => {
-        assert.equal(res.status, 403);
+        assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
       });
   });
@@ -165,6 +165,13 @@ describe('user api', async () => {
       .set('access-token', getUserToken(db, 'user'))
       .then((res) => {
         assert.equal(res.status, 403);
+        assert.deepEqual(res.body, {});
+      });
+
+    await request(serverData.app)
+      .get('/api/user/admin')
+      .then((res) => {
+        assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
       });
   });
@@ -274,11 +281,11 @@ describe('user api', async () => {
         access: 1
       })
       .then((res) => {
-        assert.equal(res.status, 403);
+        assert.equal(res.status, 401);
       });
   });
 
-  it('post user', async () => {
+  it('put user', async () => {
     const oldRecord = _.cloneDeep(db.get('users')
       .find({ name: 'user' })
       .value());
@@ -289,7 +296,7 @@ describe('user api', async () => {
       .send({
         name: 'new_user',
         password: 'new_password',
-        access: 3,
+        access: 2,
         more: 'more'
       })
       .then((res) => {
@@ -302,9 +309,9 @@ describe('user api', async () => {
         assert.exists(newRecord.password);
         assert.notEqual(newRecord.password, 'new_password');
         assert.notEqual(newRecord.password, oldRecord.password);
-        assert.equal(newRecord.access, 3);
-        assert.exists(newRecord.token);
-        assert.exists(newRecord.token_expire);
+        assert.equal(newRecord.access, 2);
+        assert.equal(newRecord.token, oldRecord.token);
+        assert.equal(newRecord.token_expire, oldRecord.token_expire);
         assert.notExists(newRecord.more);
       });
 
@@ -356,7 +363,7 @@ describe('user api', async () => {
         password: 'new_password'
       })
       .then((res) => {
-        assert.equal(res.status, 403);
+        assert.equal(res.status, 401);
       });
   });
 });

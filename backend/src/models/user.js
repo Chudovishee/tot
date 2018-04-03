@@ -15,10 +15,7 @@ function find(db, name) {
 
 function User(db) {
   return {
-    row: _({
-      token: false,
-      token_expire: 0
-    }),
+    row: _({}),
 
     fetch(name) {
       this.row = find(db, name || this.row.value().name);
@@ -43,7 +40,10 @@ function User(db) {
 
     push() {
       return db.get('users')
-        .push(this.row.value())
+        .push(_.defaults(this.row.value(), {
+          token: false,
+          token_expire: 0
+        }))
         .write();
     },
 

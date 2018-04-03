@@ -6,30 +6,33 @@ const LEVEL = {
   CONFIGURE: 2,
   ADMIN: 3
 };
+
+function levelRule(min) {
+  return function (req, res, next) {
+    if (req.user) {
+      if (min === undefined || req.user.access >= min) {
+        logger.info(`Success level ${req.user.access} access to ${req.originalUrl}`);
+        next();
+      }
+      else {
+        logger.info(`Forbidden level ${req.user.access} access to ${req.originalUrl}`);
+        res.status(403).end();
+      }
+    }
+    else {
+      logger.info(`Unauthorized access to ${req.originalUrl}`);
+      res.status(401).end();
+    }
+  };
+}
+
 module.exports = {
   LEVEL,
   ALL(req, res, next) {
-    logger.info(`success ALL access to ${req.originalUrl}`);
+    logger.info(`Success ALL access to ${req.originalUrl}`);
     next();
   },
-  USER(req, res, next) {
-    if (req.user) {
-      logger.info(`success USER access to ${req.originalUrl}`);
-      next();
-    }
-    else {
-      logger.info(`forbidden USER access to ${req.originalUrl}`);
-      res.status(403).end();
-    }
-  },
-  ADMIN(req, res, next) {
-    if (req.user && req.user.access >= LEVEL.ADMIN) {
-      logger.info(`success ADMIN access to ${req.originalUrl}`);
-      next();
-    }
-    else {
-      logger.info(`forbidden ADMIN access to ${req.originalUrl}`);
-      res.status(403).end();
-    }
-  }
+  USER: levelRule(LEVEL.USER),
+  CONFIGURE: levelRule(LEVEL.CONFIGURE),
+  ADMIN: levelRule(LEVEL.ADMIN)
 };
