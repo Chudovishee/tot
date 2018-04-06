@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import user from './user';
+import users from './users';
 
 Vue.use(Vuex);
 
@@ -10,7 +11,8 @@ export default new Vuex.Store({
     isLoading: false
   },
   modules: {
-    user
+    user,
+    users
   },
   plugins: [],
   strict: (process.env.NODE_ENV !== 'production'),

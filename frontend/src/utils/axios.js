@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 export default axios.create({
+  timeout: 1000,
   headers: {
-    timeout: 1000,
     'x-requested-with': 'XMLHttpRequest'
   }
 });

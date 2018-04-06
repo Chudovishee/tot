@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <app-login/>
-    <router-view/>
+    <app-login v-if="unauthorized"/>
+    <template v-else>
+      <app-head/>
+      <div class="app-body">
+        <router-view/>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -9,17 +14,34 @@
 import '@/assets/styles/app.scss';
 
 import AppLogin from '@/pages/login';
+import AppHead from '@/pages/head';
 
 export default {
   name: 'App',
   components: {
-    AppLogin
+    AppLogin,
+    AppHead
+  },
+  computed: {
+    unauthorized() {
+      return !this.$store.state.user.current;
+    }
   }
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 #app {
   height: 100%;
+}
+.app-head {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+.app-body {
+  padding-top: 61px;
 }
 </style>

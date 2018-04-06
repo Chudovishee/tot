@@ -7,3 +7,7 @@ export function getCurrentUser() {
 export function login(name, password) {
   return axios.post(`/api/user/${name}/login`, { password });
 }
+
+export function logout() {
+  return axios.post('/api/user/logout', {});
+}

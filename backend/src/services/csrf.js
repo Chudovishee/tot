@@ -1,7 +1,7 @@
 function csrfService(req, res, next) {
   if ((req.headers['x-requested-with'] === 'XMLHttpRequest') &&
       ((req.method !== 'POST' && req.method !== 'PUT') ||
-        (req.headers['content-type'].split(';').indexOf('application/json') >= 0))) {
+        (req.headers['content-type'] && req.headers['content-type'].split(';').indexOf('application/json') >= 0))) {
     next();
   }
   else {
