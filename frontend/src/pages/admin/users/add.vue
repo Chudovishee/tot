@@ -11,15 +11,15 @@
       label-width="120px"
       class="app-admin-add-user__form">
 
-      <el-form-item label="Name" prop="name">
+      <el-form-item label="Name" prop="name" :error="errors.name">
         <el-input v-model="addUserForm.name"/>
       </el-form-item>
 
-      <el-form-item label="Password" prop="password">
+      <el-form-item label="Password" prop="password" :error="errors.password">
         <el-input type="password" v-model="addUserForm.password" auto-complete="off"/>
       </el-form-item>
 
-      <el-form-item label="Access level" prop="access">
+      <el-form-item label="Access level" prop="access" :error="errors.access">
          <el-select v-model="addUserForm.access" placeholder="Select access level">
           <el-option
             v-for="level in accessLevels"
@@ -30,7 +30,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item :error="otherErrors">
         <el-button type="primary" @click="addUser">Add</el-button>
       </el-form-item>
 
@@ -39,8 +39,8 @@
 </template>
 
 <script>
+import { each } from 'lodash';
 import {
-  SECURE_ALL,
   SECURE_USER,
   SECURE_CONFIGURE,
   SECURE_ADMIN,
@@ -75,16 +75,41 @@ export default {
         name: null,
         password: null,
         access: null
-      }
+      },
+      otherErrors: null
     };
   },
   methods: {
     addUser() {
+      this.clearErrors();
       this.$refs.addUserForm.validate((valid) => {
         if (valid) {
-          this.$store.dispatch(ADD_USER, this.addUserForm);
+          this.$store.dispatch(ADD_USER, this.addUserForm)
+            .catch(error => this.handleError(error));
         }
       });
+    },
+    clearErrors() {
+      each(this.errors, (value, field) => {
+        this.errors[field] = null;
+      });
+      this.otherErrors = null;
+    },
+    handleError(error) {
+      let other = [];
+      if (error.response && error.response.data) {
+        each(error.response.data, (errors, field) => {
+          if (this.errors[field] !== undefined) {
+            this.errors[field] = errors.join('; ');
+          }
+          else {
+            other = other.concat(errors);
+          }
+        });
+        if (other.length) {
+          this.otherErrors = other.join('; ');
+        }
+      }
     }
   }
 };

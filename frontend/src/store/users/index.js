@@ -13,7 +13,7 @@ export default {
   mutations: {
   },
   actions: {
-    [ADD_USER]({ commit }, data) {
+    [ADD_USER](store, data) {
       return addUser(data);
     }
   }

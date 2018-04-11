@@ -73,9 +73,5 @@ export default {
     width: 400px;
     margin: auto;
   }
-
-  /deep/ .el-form-item__label::before {
-    content: none;
-  }
 }
 </style>
