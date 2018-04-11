@@ -1,0 +1,8 @@
+#!/bin/bash
+
+id -u tot &>/dev/null || useradd -U tot
+chown -R tot:tot /var/lib/tot
+chown -R tot:tot /var/log/tot
+systemctl daemon-reload
+systemctl enable tot-backend.service
+systemctl start tot-backend.service

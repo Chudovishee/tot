@@ -1,0 +1,22 @@
+[Unit]
+Description=tot-backend
+After=syslog.target
+After=network.target
+Requires=nginx.service
+
+[Service]
+Type=simple
+PIDFile=/run/tot-backend.pid
+
+User=tot
+Group=tot
+
+ExecStart=/usr/bin/tot-backend
+ExecStop=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target 

@@ -1,17 +1,15 @@
 {
-  "name": "tot",
-  "version": "1.0.0",
-  "description": "tot",
-  "author": "Анатолий Дерюжов <derujov@gmail.com>",
-  "private": true,
+  "name": "tot-frontend",
+  "version": "1.0.1",
+  "description": "tot frontend",
+  "author": "Anatoly Deryuzhov <derujov@gmail.com>",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development HOST=0.0.0.0 PORT=8082 webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env NODE_ENV=development HOST=0.0.0.0 PORT=8081 webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "test": "npm run unit",
     "lint": "eslint --ext .js,.vue src test/unit",
-    "build": "node build/build.js",
-    "copy-to-nginx": "cp -r /usr/src/frontend/dist/* /usr/share/nginx/html/"
+    "build": "node build/build.js"
   },
   "dependencies": {
     "vue": "^2.5.2",

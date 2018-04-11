@@ -1,15 +1,14 @@
 {
-  "version": "1",
-  "host": "0.0.0.0",
-  "port": "80",
+  "host": "127.0.0.1",
+  "port": "8080",
 
-  "log_file": "/var/log/backend/backend.log",
+  "log_file": "/var/log/tot/backend.log",
   "log_level": "debug",
   "log_format": "simple",
 
   "api_prefix": "/api",
 
-  "db": "/var/lib/backend/db.json",
+  "db": "/var/lib/tot/db.json",
 
   "user_token_max_age": 2500000000
 }
