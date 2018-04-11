@@ -1,0 +1,26 @@
+FROM debian
+
+RUN apt-get update
+RUN apt-get install -y dpkg debconf debhelper lintian curl procps nginx
+RUN apt-get upgrade -y
+
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
+RUN apt-get install -y nodejs
+
+RUN mkdir -p /tot/backend
+RUN mkdir -p /tot/frontend
+
+COPY ./backend/package.json /tot/backend
+COPY ./frontend/package.json /tot/frontend
+
+WORKDIR /tot/backend
+RUN npm install
+
+WORKDIR /tot/frontend
+RUN npm install
+
+COPY ./backend /tot/backend
+COPY ./frontend /tot/frontend
+COPY ./debug/entrypoint-debug.sh /tot
+
+CMD ["/tot/entrypoint-debug.sh"]

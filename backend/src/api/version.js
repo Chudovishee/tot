@@ -1,8 +1,7 @@
-const config = require('config');
 const express = require('express');
 const secure = require('../services/secure');
 
-const version = config.get('version');
+const { version } = require('../../package.json');
 
 const router = express.Router();
 
