@@ -6,137 +6,127 @@ const validate = require('validate.js');
 const sha256 = require('../utils/sha256');
 const secure = require('../services/secure');
 
+const Base = require('./base');
+
 const cookieMaxAge = config.get('user_token_max_age');
 
-function find(db, name) {
-  return db.get('users')
-    .find({ name });
+function assignPreproccess(...args) {
+  args = _.map(args, (obj) => {
+    if (obj instanceof Base) {
+      return obj.value();
+    }
+    return obj;
+  });
+
+  const newPasswordArg = _(args).reverse()
+    .find(arg => arg.password);
+
+  if (newPasswordArg) {
+    return _.assign(...args, { password: sha256(String(newPasswordArg.password)) });
+  }
+  return _.assign(...args);
 }
 
-function User(db) {
-  return {
-    row: _({}),
+class User extends Base {
+  constructor(data) {
+    super(assignPreproccess(data));
+  }
 
-    fetch(name) {
-      this.row = find(db, name || this.row.value().name);
-      return this;
-    },
+  fetch(db) {
+    this.data = db.get('users')
+      .find({ name: this.get('name') });
+    return this;
+  }
 
-    value() {
-      return this.row.value();
-    },
+  publish() {
+    return this.data.pick(['name', 'token_expire', 'access']).value();
+  }
 
-    assign(...args) {
-      this.row = this.row.assign(...args);
+  assign(...args) {
+    this.data = this.data.assign(assignPreproccess(...args));
 
-      const newPasswordArg = _(args).reverse()
-        .find(arg => arg.password);
+    return this;
+  }
 
-      if (newPasswordArg) {
-        this.row = this.row.set('password', sha256(String(newPasswordArg.password)));
-      }
-      return this;
-    },
+  async login(password) {
+    if (this.data.value() && this.data.value().password === sha256(String(password))) {
+      const accessToken = crypto.randomBytes(32).toString('hex');
 
-    push() {
-      return db.get('users')
-        .push(_.defaults(this.row.value(), {
+      await this.data.assign({
+        token: accessToken,
+        token_expire: Date.now() + cookieMaxAge
+      })
+        .write();
+
+      return accessToken;
+    }
+
+    return false;
+  }
+
+  async logout() {
+    if (this.data.value()) {
+      await this.data
+        .assign({
           token: false,
           token_expire: 0
-        }))
-        .write();
-    },
-
-    write() {
-      if (this.row.write) {
-        return this.row.write();
-      }
-      return Promise.reject(Error('Row is not database value'));
-    },
-
-    publish() {
-      return this.row.pick(['name', 'token_expire', 'access']).value();
-    },
-
-    async login(password) {
-      if (this.row.value() && this.row.value().password === sha256(String(password))) {
-        const accessToken = crypto.randomBytes(32).toString('hex');
-
-        await this.row.assign({
-          token: accessToken,
-          token_expire: Date.now() + cookieMaxAge
         })
-          .write();
+        .write();
 
-        return accessToken;
-      }
-
-      return false;
-    },
-
-    async logout() {
-      if (this.row.value()) {
-        await this.row
-          .assign({
-            token: false,
-            token_expire: 0
-          })
-          .write();
-
-        return true;
-      }
-      return false;
-    },
-
-    createValidate() {
-      const fields = this.row.value();
-
-      let errors = validate(fields, {
-        name: {
-          presence: true,
-          format: {
-            pattern: /^[\w]{4,20}$/,
-            message: 'user name must be string with 4-20 characters'
-          }
-        },
-        password: {
-          presence: true
-        },
-        access: {
-          presence: true,
-          inclusion: {
-            within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
-          }
-        }
-      });
-
-      if ((!errors || Object.keys(errors).length === 0) &&
-        find(db, fields.name).value()) {
-        errors = {
-          name: [`User with name "${fields.name}" already exists`]
-        };
-      }
-
-      return errors;
-    },
-    editValidate() {
-      const fields = this.row.value();
-
-      return validate(fields, {
-        name: {
-          format: {
-            pattern: /^[\w]{4,20}$/,
-            message: 'user name must be string with 4-20 characters'
-          }
-        },
-        access: {
-          inclusion: {
-            within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
-          }
-        }
-      });
+      return true;
     }
-  };
+    return false;
+  }
+
+  createValidate(db) {
+    const fields = this.data.value();
+
+    let errors = validate(fields, {
+      name: {
+        presence: true,
+        format: {
+          pattern: /^[\w]{4,20}$/,
+          message: 'user name must be string with 4-20 characters'
+        }
+      },
+      password: {
+        presence: true
+      },
+      access: {
+        presence: true,
+        inclusion: {
+          within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
+        }
+      }
+    });
+
+    if ((!errors || Object.keys(errors).length === 0) &&
+      db.get('users').find({ name: fields.name }).value()) {
+      errors = {
+        name: [`User with name "${fields.name}" already exists`]
+      };
+    }
+
+    return errors;
+  }
+
+  editValidate() {
+    const fields = this.data.value();
+
+    return validate(fields, {
+      name: {
+        format: {
+          pattern: /^[\w]{4,20}$/,
+          message: 'user name must be string with 4-20 characters'
+        }
+      },
+      access: {
+        inclusion: {
+          within: [secure.LEVEL.USER, secure.LEVEL.CONFIGURE, secure.LEVEL.ADMIN]
+        }
+      }
+    });
+  }
 }
 
 module.exports = User;

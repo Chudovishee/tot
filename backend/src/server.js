@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const logger = require('./services/logger');
 const version = require('./api/version');
-const user = require('./api/user');
+const users = require('./api/users');
 const csrfService = require('./services/csrf');
 const userService = require('./services/user');
 
@@ -21,7 +21,7 @@ function Server(db) {
   app.use(userService(db));
 
   app.use(`${apiPrefix}/version`, version);
-  app.use(`${apiPrefix}/user`, user(db));
+  app.use(`${apiPrefix}/users`, users(db));
 
   const server = app.listen(port, host);
   logger.info(`Running on http://${host}:${port}`);

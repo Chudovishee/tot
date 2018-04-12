@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import HelloWorld from '@/components/HelloWorld';
 
 import store from '@/store';
-import { FETCH_CURRENT_USER } from '@/store/user';
+import { FETCH_CURRENT_USER } from '@/store/users';
 
 import adminRouter from '@/pages/admin/router';
 

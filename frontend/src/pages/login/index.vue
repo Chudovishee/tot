@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { LOGIN } from '@/store/user';
+import { LOGIN } from '@/store/users';
 
 export default {
   name: 'AppLogin',

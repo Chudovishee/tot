@@ -114,9 +114,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-
-.app-admin-add-user {
-}
-</style>

@@ -12,7 +12,7 @@
 
 <script>
 import AppNavigation from '@/components/navigation';
-import { LOGOUT } from '@/store/user';
+import { LOGOUT } from '@/store/users';
 
 export default {
   name: 'AppHead',

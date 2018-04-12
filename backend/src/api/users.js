@@ -5,13 +5,15 @@ const config = require('config');
 const logger = require('../services/logger');
 const secure = require('../services/secure');
 const User = require('../models/user');
+const Users = require('../models/users');
 
 function userApi(db) {
   const cookieMaxAge = config.get('user_token_max_age');
   const router = express.Router();
 
   router.post('/:user/login', secure.ALL, async (req, res) => {
-    const user = User(db).fetch(req.params.user);
+    const user = new User({ name: req.params.user })
+      .fetch(db);
 
     const accessToken = await user.login(req.body.password);
 
@@ -32,19 +34,22 @@ function userApi(db) {
     }
   });
 
-  router.post('/logout', secure.USER, async (req, res) => {
-    await User(db).fetch(req.user.name).logout();
+  router.post('/current/logout', secure.USER, async (req, res) => {
+    await new User({ name: req.user.name })
+      .fetch(db)
+      .logout();
 
     res.status(200).end();
     logger.info(`success logout, user: ${req.user.name}(${req.user.id})`);
   });
 
-  router.get('/', secure.USER, (req, res) => {
-    res.json(User().assign(req.user).publish());
+  router.get('/current', secure.USER, (req, res) => {
+    res.json(new User({ name: req.user.name }).fetch(db).publish());
   });
 
   router.get('/:user', secure.ADMIN, (req, res) => {
-    const user = User(db).fetch(req.params.user);
+    const user = new User({ name: req.params.user })
+      .fetch(db);
 
     if (user.value()) {
       res.json(user.publish());
@@ -54,12 +59,19 @@ function userApi(db) {
     }
   });
 
+  router.get('/', secure.ADMIN, async (req, res) => {
+    res.json(Users().fetch(db).publish());
+  });
+
   router.post('/', secure.ADMIN, async (req, res) => {
-    const user = User(db).assign(_.pick(req.body, ['name', 'password', 'access']));
-    const errors = user.createValidate();
+    const user = new User(_.pick(req.body, ['name', 'password', 'access']));
+    // const user = User(db).assign(_.pick(req.body, ['name', 'password', 'access']));
+    const errors = user.createValidate(db);
 
     if (!errors || Object.keys(errors).length === 0) {
-      await user.push();
+      await new Users().fetch(db)
+        .push(user)
+        .write();
       res.status(200).end();
     }
     else {
@@ -69,14 +81,18 @@ function userApi(db) {
   });
 
   router.put('/:user', secure.ADMIN, async (req, res) => {
-    const user = User(db).fetch(req.params.user);
+    const user = new User({ name: req.params.user })
+      .fetch(db);
 
     if (user.value()) {
-      const newUser = User().assign({ name: req.params.user }, _.pick(req.body, ['password', 'access']));
+      const newUser = new User({
+        name: req.params.user,
+        ..._.pick(req.body, ['password', 'access'])
+      });
       const errors = newUser.editValidate();
 
       if (!errors || Object.keys(errors).length === 0) {
-        await user.assign(newUser.value())
+        await user.assign(newUser)
           .write();
         res.status(200).end();
       }

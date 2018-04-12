@@ -14,7 +14,7 @@ function getUserToken(db, user) {
     .token;
 }
 
-describe('user api', async () => {
+describe('users api', async () => {
   let serverData;
   let db;
 
@@ -28,7 +28,7 @@ describe('user api', async () => {
 
   it('login', async () => {
     await request(serverData.app)
-      .post('/api/user/admin/login')
+      .post('/api/users/admin/login')
       .send({ password: 'admin' })
       .then((res) => {
         assert.equal(res.status, 200);
@@ -37,14 +37,14 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user/admin/login')
+      .post('/api/users/admin/login')
       .then((res) => {
         assert.equal(res.status, 403);
         assert.deepEqual(res.body, {});
       });
 
     await request(serverData.app)
-      .post('/api/user/admin/login')
+      .post('/api/users/admin/login')
       .send({ password: 'bad password' })
       .then((res) => {
         assert.equal(res.status, 403);
@@ -56,14 +56,14 @@ describe('user api', async () => {
     const initToken = getUserToken(db, 'admin');
 
     await request(serverData.app)
-      .post('/api/user/logout')
+      .post('/api/users/current/logout')
       .then((res) => {
         assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
       });
 
     await request(serverData.app)
-      .post('/api/user/logout')
+      .post('/api/users/current/logout')
       .set('access-token', initToken)
       .then((res) => {
         assert.equal(res.status, 200);
@@ -72,7 +72,7 @@ describe('user api', async () => {
     assert.equal(getUserToken(db, 'admin'), false);
 
     await request(serverData.app)
-      .post('/api/user/logout')
+      .post('/api/users/current/logout')
       .set('access-token', initToken)
       .then((res) => {
         assert.equal(res.status, 401);
@@ -84,7 +84,7 @@ describe('user api', async () => {
 
   it('get current user', async () => {
     await request(serverData.app)
-      .get('/api/user')
+      .get('/api/users/current')
       .set('access-token', getUserToken(db, 'admin'))
       .then((res) => {
         assert.equal(res.status, 200);
@@ -95,7 +95,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user')
+      .get('/api/users/current')
       .set('access-token', getUserToken(db, 'user'))
       .then((res) => {
         assert.equal(res.status, 200);
@@ -106,7 +106,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user')
+      .get('/api/users/current')
       .then((res) => {
         assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
@@ -115,7 +115,7 @@ describe('user api', async () => {
 
   it('get any user', async () => {
     await request(serverData.app)
-      .get('/api/user/admin')
+      .get('/api/users/admin')
       .set('access-token', getUserToken(db, 'admin'))
       .then((res) => {
         assert.equal(res.status, 200);
@@ -126,7 +126,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/user')
+      .get('/api/users/user')
       .set('access-token', getUserToken(db, 'admin'))
       .then((res) => {
         assert.equal(res.status, 200);
@@ -137,7 +137,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/fail')
+      .get('/api/users/fail')
       .set('access-token', getUserToken(db, 'admin'))
       .then((res) => {
         assert.equal(res.status, 404);
@@ -145,7 +145,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/admin')
+      .get('/api/users/admin')
       .set('access-token', getUserToken(db, 'user'))
       .then((res) => {
         assert.equal(res.status, 403);
@@ -153,7 +153,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/user')
+      .get('/api/users/user')
       .set('access-token', getUserToken(db, 'user'))
       .then((res) => {
         assert.equal(res.status, 403);
@@ -161,7 +161,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/fail')
+      .get('/api/users/fail')
       .set('access-token', getUserToken(db, 'user'))
       .then((res) => {
         assert.equal(res.status, 403);
@@ -169,7 +169,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .get('/api/user/admin')
+      .get('/api/users/admin')
       .then((res) => {
         assert.equal(res.status, 401);
         assert.deepEqual(res.body, {});
@@ -178,7 +178,7 @@ describe('user api', async () => {
 
   it('post user', async () => {
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         name: 'new_user',
@@ -203,7 +203,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         name: '+_+_+',
@@ -219,7 +219,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         name: 'asdfghjklqwertyuiopzxcvbnmasdfghjkqwertyuisdfgherasdfghjklqwertyuiopzxcvbnmasdfghjkqwertyuisdfgher',
@@ -234,7 +234,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))
       .send({})
       .then((res) => {
@@ -247,7 +247,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         name: 'admin',
@@ -262,7 +262,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .set('access-token', getUserToken(db, 'user'))
       .send({
         name: 'new_user',
@@ -274,7 +274,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .post('/api/user')
+      .post('/api/users')
       .send({
         name: 'new_user',
         password: 'new_password',
@@ -291,7 +291,7 @@ describe('user api', async () => {
       .value());
 
     await request(serverData.app)
-      .put('/api/user/user')
+      .put('/api/users/user')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         name: 'new_user',
@@ -316,7 +316,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .put('/api/user/user')
+      .put('/api/users/user')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         access: 10
@@ -329,7 +329,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .put('/api/user/user')
+      .put('/api/users/user')
       .set('access-token', getUserToken(db, 'admin'))
       .send({})
       .then((res) => {
@@ -337,7 +337,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .put('/api/user/user_not_exists')
+      .put('/api/users/user_not_exists')
       .set('access-token', getUserToken(db, 'admin'))
       .send({
         password: 'new_password',
@@ -348,7 +348,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .put('/api/user/admin')
+      .put('/api/users/admin')
       .set('access-token', getUserToken(db, 'user'))
       .send({
         password: 'new_password'
@@ -358,7 +358,7 @@ describe('user api', async () => {
       });
 
     await request(serverData.app)
-      .put('/api/user/admin')
+      .put('/api/users/admin')
       .send({
         password: 'new_password'
       })

@@ -24,7 +24,7 @@ export default {
   },
   computed: {
     unauthorized() {
-      return !this.$store.state.user.current;
+      return !this.$store.state.users.current;
     }
   }
 };
