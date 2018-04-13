@@ -91,6 +91,7 @@ describe('users api', async () => {
         assert.exists(res.body.name);
         assert.exists(res.body.token_expire);
         assert.exists(res.body.access);
+        assert.notExists(res.body.password);
         assert.equal(res.body.name, 'admin');
       });
 
@@ -102,6 +103,7 @@ describe('users api', async () => {
         assert.exists(res.body.name);
         assert.exists(res.body.token_expire);
         assert.exists(res.body.access);
+        assert.notExists(res.body.password);
         assert.equal(res.body.name, 'user');
       });
 
@@ -133,6 +135,7 @@ describe('users api', async () => {
         assert.exists(res.body.name);
         assert.exists(res.body.token_expire);
         assert.exists(res.body.access);
+        assert.notExists(res.body.password);
         assert.equal(res.body.name, 'user');
       });
 
@@ -364,6 +367,55 @@ describe('users api', async () => {
       })
       .then((res) => {
         assert.equal(res.status, 401);
+      });
+  });
+
+  it('get users', async () => {
+    await request(serverData.app)
+      .get('/api/users')
+      .set('access-token', getUserToken(db, 'admin'))
+      .then((res) => {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.length, db.get('users').value().length);
+
+        _.each(res.body, (user) => {
+          assert.exists(user.name);
+          assert.exists(user.token_expire);
+          assert.exists(user.access);
+          assert.notExists(user.password);
+        });
+      });
+
+    await request(serverData.app)
+      .get('/api/users')
+      .set('access-token', getUserToken(db, 'user'))
+      .then((res) => {
+        assert.equal(res.status, 403);
+        assert.deepEqual(res.body, {});
+      });
+  });
+
+  it('delete user', async () => {
+    await request(serverData.app)
+      .delete('/api/users/admin')
+      .set('access-token', getUserToken(db, 'user'))
+      .then((res) => {
+        assert.equal(res.status, 403);
+      });
+
+    await request(serverData.app)
+      .delete('/api/users/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .then((res) => {
+        assert.equal(res.status, 200);
+        assert.equal(db.get('users').find({ name: 'user' }).value(), undefined);
+      });
+
+    await request(serverData.app)
+      .delete('/api/users/user')
+      .set('access-token', getUserToken(db, 'admin'))
+      .then((res) => {
+        assert.equal(res.status, 404);
       });
   });
 });

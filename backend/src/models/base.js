@@ -19,7 +19,13 @@ class Base {
   }
 
   assign(...args) {
-    this.data.assign(...args);
+    this.data = this.data.assign(...args);
+    return this;
+  }
+
+  remove(...args) {
+    this.data = this.data.remove(...args);
+    return this;
   }
 
   write(...args) {

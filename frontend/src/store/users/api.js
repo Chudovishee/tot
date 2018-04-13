@@ -15,3 +15,11 @@ export function logout() {
 export function addUser(payload) {
   return axios.post('/api/users', payload);
 }
+
+export function deleteUser(name) {
+  return axios.delete(`/api/users/${name}`);
+}
+
+export function getUsers() {
+  return axios.get('/api/users');
+}

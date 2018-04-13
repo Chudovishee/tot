@@ -60,7 +60,7 @@ function userApi(db) {
   });
 
   router.get('/', secure.ADMIN, async (req, res) => {
-    res.json(Users().fetch(db).publish());
+    res.json(new Users().fetch(db).publish());
   });
 
   router.post('/', secure.ADMIN, async (req, res) => {
@@ -100,6 +100,21 @@ function userApi(db) {
         res.status(400)
           .json(errors);
       }
+    }
+    else {
+      res.status(404).end();
+    }
+  });
+
+  router.delete('/:user', secure.ADMIN, async (req, res) => {
+    const user = new User({ name: req.params.user })
+      .fetch(db);
+    if (user.value()) {
+      debugger;
+      await new Users().fetch(db)
+        .remove(user)
+        .write();
+      res.status(200).end();
     }
     else {
       res.status(404).end();

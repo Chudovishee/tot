@@ -21,6 +21,11 @@ function apiRequest(app) {
         .put(url)
         .set('x-requested-with', 'XMLHttpRequest')
         .set('content-type', 'application/json');
+    },
+    delete(url) {
+      return chai.request(app)
+        .delete(url)
+        .set('x-requested-with', 'XMLHttpRequest');
     }
   };
 }
