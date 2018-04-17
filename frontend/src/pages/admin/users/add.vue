@@ -20,14 +20,7 @@
       </el-form-item>
 
       <el-form-item label="Access level" prop="access" :error="errors.access">
-         <el-select v-model="addUserForm.access" placeholder="Select access level">
-          <el-option
-            v-for="level in accessLevels"
-            :key="level.value"
-            :label="level.label"
-            :value="level.value">
-          </el-option>
-        </el-select>
+        <app-access-select v-model="addUserForm.access"/>
       </el-form-item>
 
       <el-form-item :error="otherErrors">
@@ -39,16 +32,19 @@
 </template>
 
 <script>
-import { each } from 'lodash';
 import {
   SECURE_USER,
-  SECURE_CONFIGURE,
-  SECURE_ADMIN,
   ADD_USER
 } from '@/store/users';
+import AppAccessSelect from '@/components/accessSelect';
+import FormErrors from '@/mixins/formErrors';
 
 export default {
   name: 'AppAdminAddUser',
+  mixins: [FormErrors],
+  components: {
+    AppAccessSelect
+  },
   data() {
     return {
       addUserForm: {
@@ -56,11 +52,6 @@ export default {
         password: '',
         access: SECURE_USER
       },
-      accessLevels: [
-        { value: SECURE_USER, label: 'Read access' },
-        { value: SECURE_CONFIGURE, label: 'Configure access' },
-        { value: SECURE_ADMIN, label: 'Administrator access' }
-      ],
       rules: {
         name: {
           required: true,
@@ -75,8 +66,7 @@ export default {
         name: null,
         password: null,
         access: null
-      },
-      otherErrors: null
+      }
     };
   },
   methods: {
@@ -85,31 +75,9 @@ export default {
       this.$refs.addUserForm.validate((valid) => {
         if (valid) {
           this.$store.dispatch(ADD_USER, this.addUserForm)
-            .catch(error => this.handleError(error));
+            .catch(error => this.handleError(error.response && error.response.data));
         }
       });
-    },
-    clearErrors() {
-      each(this.errors, (value, field) => {
-        this.errors[field] = null;
-      });
-      this.otherErrors = null;
-    },
-    handleError(error) {
-      let other = [];
-      if (error.response && error.response.data) {
-        each(error.response.data, (errors, field) => {
-          if (this.errors[field] !== undefined) {
-            this.errors[field] = errors.join('; ');
-          }
-          else {
-            other = other.concat(errors);
-          }
-        });
-        if (other.length) {
-          this.otherErrors = other.join('; ');
-        }
-      }
     }
   }
 };

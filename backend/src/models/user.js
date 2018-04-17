@@ -10,28 +10,24 @@ const Base = require('./base');
 
 const cookieMaxAge = config.get('user_token_max_age');
 
-function assignPreproccess(...args) {
-  args = _.map(args, (obj) => {
-    if (obj instanceof Base) {
-      return obj.value();
-    }
-    return obj;
-  });
+// function assignPreproccess(...args) {
+//   args = _.map(args, (obj) => {
+//     if (obj instanceof Base) {
+//       return obj.value();
+//     }
+//     return obj;
+//   });
 
-  const newPasswordArg = _(args).reverse()
-    .find(arg => arg.password);
+//   const newPasswordArg = _(args).reverse()
+//     .find(arg => arg.password);
 
-  if (newPasswordArg) {
-    return _.assign(...args, { password: sha256(String(newPasswordArg.password)) });
-  }
-  return _.assign(...args);
-}
+//   if (newPasswordArg) {
+//     return _.assign(...args, { password: sha256(String(newPasswordArg.password)) });
+//   }
+//   return _.assign(...args);
+// }
 
 class User extends Base {
-  constructor(data) {
-    super(assignPreproccess(data));
-  }
-
   fetch(db) {
     this.data = db.get('users')
       .find({ name: this.get('name') });
@@ -43,7 +39,13 @@ class User extends Base {
   }
 
   assign(...args) {
-    this.data = this.data.assign(assignPreproccess(...args));
+    args = _.map(args, (obj) => {
+      if (obj instanceof Base) {
+        return obj.value();
+      }
+      return obj;
+    });
+    this.data = this.data.assign(...args);
 
     return this;
   }
@@ -126,6 +128,13 @@ class User extends Base {
         }
       }
     });
+  }
+
+  setPassword(password) {
+    if (password) {
+      this.data = this.data.set('password', sha256(String(password)));
+    }
+    return this;
   }
 }
 

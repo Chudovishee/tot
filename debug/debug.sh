@@ -22,7 +22,7 @@ cp ../build/templates/nginx.tmpl "$(pwd)/data/etc/nginx/conf.d/tot-backend.conf"
 
 docker image build -f ../Dockerfile.debug -t "tot_debug:${FULL_VERSION}" ../
 
-docker run -it \
+docker run -it --rm \
   -p 8888:8888 \
   -p 8080:8080 \
   -p 8081:8081 \

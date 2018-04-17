@@ -236,6 +236,7 @@ describe('users api', async () => {
         });
       });
 
+    debugger;
     await request(serverData.app)
       .post('/api/users')
       .set('access-token', getUserToken(db, 'admin'))

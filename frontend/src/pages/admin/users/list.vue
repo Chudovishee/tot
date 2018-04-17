@@ -6,32 +6,45 @@
       :key="user.name"
       class="app-admin-user-list__user">
 
-      <div class="app-admin-user-list__name">{{ user.name }}</div>
-      <div class="app-admin-user-list__access">
-        {{ accessToString(user.access) }}
-      </div>
-      <div class="app-admin-user-list__actions">
-        <el-button icon="el-icon-edit" size="small"/>
+      <div class="app-admin-user-list__user-view">
+        <div class="app-admin-user-list__name">{{ user.name }}</div>
+        <div class="app-admin-user-list__access">
+          {{ accessToString(user.access) }}
+        </div>
+        <div class="app-admin-user-list__actions">
+          <el-button v-if="editing[user.name]"
+            icon="el-icon-arrow-down"
+            size="small"
+            @click="editUser(user.name, false)"/>
 
-        <el-popover placement="top">
-          <el-button
-            slot="reference"
-            type="danger"
-            icon="el-icon-delete"
-            size="small"/>
+          <el-button v-else
+            icon="el-icon-edit"
+            size="small"
+            @click="editUser(user.name, true)"/>
 
-          <div class="app-admin-user-list__delete-confirm">
-            <div class="app-admin-user-list__delete-confirm-text">Are you sure to delete?</div>
-            <div class="app-admin-user-list__delete-confirm-button">
-              <el-button
-                type="danger"
-                size="mini"
-                @click="deleteUser(user.name)">Yes</el-button>
+          <el-popover placement="top">
+            <el-button
+              slot="reference"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"/>
+
+            <div class="app-admin-user-list__delete-confirm">
+              <div class="app-admin-user-list__delete-confirm-text">Are you sure to delete?</div>
+              <div class="app-admin-user-list__delete-confirm-button">
+                <el-button
+                  type="danger"
+                  size="mini"
+                  @click="deleteUser(user.name)">Yes</el-button>
+              </div>
             </div>
-          </div>
-        </el-popover>
-
+          </el-popover>
+        </div>
       </div>
+
+      <app-admin-edit-user v-if="editing[user.name]"
+        class="app-admin-user-list__user-edit"
+        :value="user"/>
     </div>
   </el-card>
 </template>
@@ -45,6 +58,7 @@ import {
   SECURE_CONFIGURE,
   SECURE_ADMIN
 } from '@/store/users';
+import AppAdminEditUser from './edit';
 
 const accessStrings = {
   [SECURE_ALL]: 'Base read access',
@@ -55,9 +69,12 @@ const accessStrings = {
 
 export default {
   name: 'AppAdminUsersList',
+  components: {
+    AppAdminEditUser
+  },
   data() {
     return {
-      userToDelete: null
+      editing: {}
     };
   },
   mounted() {
@@ -74,6 +91,12 @@ export default {
     },
     deleteUser(name) {
       this.$store.dispatch(DELETE_USER, name);
+    },
+    editUser(name, open) {
+      this.editing = {
+        ...this.editing,
+        [name]: !!open
+      };
     }
   }
 };
@@ -94,9 +117,16 @@ export default {
   }
 
   &__user {
-    display: flex;
     padding: 8px 20px;
     border-bottom: 1px solid #ebeef5;
+  }
+
+  &__user-view {
+    display: flex;
+  }
+
+  &__user-edit {
+    margin: 20px 0 12px 0;
   }
 
   &__name,

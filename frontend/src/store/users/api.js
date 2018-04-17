@@ -23,3 +23,7 @@ export function deleteUser(name) {
 export function getUsers() {
   return axios.get('/api/users');
 }
+
+export function editUser(name, payload) {
+  return axios.put(`/api/users/${name}`, payload);
+}

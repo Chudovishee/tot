@@ -64,8 +64,8 @@ function userApi(db) {
   });
 
   router.post('/', secure.ADMIN, async (req, res) => {
-    const user = new User(_.pick(req.body, ['name', 'password', 'access']));
-    // const user = User(db).assign(_.pick(req.body, ['name', 'password', 'access']));
+    const user = new User(_.pick(req.body, ['name', 'access']));
+    user.setPassword(req.body.password);
     const errors = user.createValidate(db);
 
     if (!errors || Object.keys(errors).length === 0) {
@@ -87,8 +87,9 @@ function userApi(db) {
     if (user.value()) {
       const newUser = new User({
         name: req.params.user,
-        ..._.pick(req.body, ['password', 'access'])
+        access: req.body.access
       });
+      newUser.setPassword(req.body.password);
       const errors = newUser.editValidate();
 
       if (!errors || Object.keys(errors).length === 0) {
@@ -110,7 +111,6 @@ function userApi(db) {
     const user = new User({ name: req.params.user })
       .fetch(db);
     if (user.value()) {
-      debugger;
       await new Users().fetch(db)
         .remove(user)
         .write();

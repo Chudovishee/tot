@@ -1,11 +1,15 @@
+import { pick } from 'lodash';
 import {
   getCurrentUser,
   getUsers,
   login,
   logout,
   addUser,
-  deleteUser
+  deleteUser,
+  editUser
 } from './api';
+
+export const AUTH_API_CALL = 'AUTH_API_CALL';
 
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER';
 export const LOGIN = 'LOGIN';
@@ -13,6 +17,7 @@ export const LOGOUT = 'LOGOUT';
 export const ADD_USER = 'ADD_USER';
 export const FETCH_USERS = 'FETCH_USERS';
 export const DELETE_USER = 'DELETE_USER';
+export const EDIT_USER = 'EDIT_USER';
 
 export const FETCH_CURRENT_USER_SUCCESS = 'FETCH_CURRENT_USER_SUCCESS';
 export const FETCH_CURRENT_USER_ERROR = 'FETCH_CURRENT_USER_ERROR';
@@ -55,6 +60,14 @@ export default {
 
   },
   actions: {
+    [AUTH_API_CALL]({ commit }, apiCall) {
+      return apiCall.catch((error) => {
+        if (error.response.status === 401) {
+          commit(LOGOUT_SUCCESS);
+        }
+        throw error;
+      });
+    },
     [FETCH_CURRENT_USER]({ commit }) {
       return getCurrentUser()
         .then((response) => {
@@ -80,7 +93,7 @@ export default {
         });
     },
     [ADD_USER]({ dispatch }, data) {
-      return addUser(data)
+      return dispatch(AUTH_API_CALL, addUser(data))
         .then(() => {
           dispatch(FETCH_USERS);
         })
@@ -89,8 +102,8 @@ export default {
           throw error;
         });
     },
-    [FETCH_USERS]({ commit }) {
-      return getUsers()
+    [FETCH_USERS]({ commit, dispatch }) {
+      return dispatch(AUTH_API_CALL, getUsers())
         .then((response) => {
           if (response && Array.isArray(response.data)) {
             commit(FETCH_USERS_SUCCESS, response.data);
@@ -105,13 +118,19 @@ export default {
         });
     },
     [DELETE_USER]({ dispatch }, name) {
-      return deleteUser(name)
+      return dispatch(AUTH_API_CALL, deleteUser(name))
         .then(() => {
           dispatch(FETCH_USERS);
         })
         .catch((error) => {
           dispatch(FETCH_USERS);
           throw error;
+        });
+    },
+    [EDIT_USER]({ dispatch }, user) {
+      return dispatch(AUTH_API_CALL, editUser(user.name, pick(user, ['password', 'access'])))
+        .then(() => {
+          dispatch(FETCH_USERS);
         });
     }
   }
