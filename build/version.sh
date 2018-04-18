@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BACKEND_JSON="../backend/package.json"
+SYSTEM_JSON="../system/package.json"
 FRONTEND_JSON="../frontend/package.json"
 
 VERSION=`/usr/bin/node -p -e "require (\"$BACKEND_JSON\"). version" 2>/dev/null`
@@ -17,4 +18,5 @@ NEXT_VER="$VERSION_1.$VERSION_2.$NEXT_VER3"
 [ "x$1" != "x--inc" ] && echo $VERSION && exit 0
 
 /usr/bin/sed -e "s,\"version\": \".*,\"version\": \"$NEXT_VER\"\,,g" -i $BACKEND_JSON
+/usr/bin/sed -e "s,\"version\": \".*,\"version\": \"$NEXT_VER\"\,,g" -i $SYSTEM_JSON
 /usr/bin/sed -e "s,\"version\": \".*,\"version\": \"$NEXT_VER\"\,,g" -i $FRONTEND_JSON

@@ -7,11 +7,16 @@ RUN apt-get upgrade -y
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
 RUN apt-get install -y nodejs
 
+RUN mkdir -p /tot/system
 RUN mkdir -p /tot/backend
 RUN mkdir -p /tot/frontend
 
+COPY ./system/package.json /tot/system
 COPY ./backend/package.json /tot/backend
 COPY ./frontend/package.json /tot/frontend
+
+WORKDIR /tot/system
+RUN npm install
 
 WORKDIR /tot/backend
 RUN npm install
@@ -19,6 +24,7 @@ RUN npm install
 WORKDIR /tot/frontend
 RUN npm install
 
+COPY ./system /tot/system
 COPY ./backend /tot/backend
 COPY ./frontend /tot/frontend
 COPY ./debug/entrypoint-debug.sh /tot

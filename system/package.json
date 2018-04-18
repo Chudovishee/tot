@@ -1,12 +1,11 @@
 {
-  "name": "tot-backend",
+  "name": "tot-system",
   "version": "1.0.2",
   "main": "./src/index.js",
   "author": "Anatoly Deryuzhov <derujov@gmail.com>",
   "scripts": {
-    "start": "NODE_CONFIG_DIR=/etc/tot/backend/ npm run migrate && node ./src/index.js",
-    "migrate": "node ./src/migrate.js",
-    "dev": "NODE_ENV=development npm run lint && npm run migrate && node --inspect=0.0.0.0 ./src/index.js",
+    "start": "NODE_CONFIG_DIR=/etc/tot/system/ node ./src/index.js",
+    "dev": "NODE_ENV=development npm run lint && node --inspect=0.0.0.0 ./src/index.js",
     "lint": "eslint --ext .js src test",
     "test": "LOG_LEVEL=error npm run lint && ./node_modules/.bin/mocha"
   },
@@ -14,11 +13,8 @@
     "express": "^4.16.1",
     "winston": "^3.0.0-rc3",
     "config": "^1.27",
-    "lowdb": "^1.0.0",
-    "cookie-parser": "^1.4.3",
     "lodash": "^4.17.5",
-    "body-parser": "^1.18.2",
-    "validate.js": "^0.12.0"
+    "body-parser": "^1.18.2"
   },
   "devDependencies": {
     "eslint": "^4.19.0",

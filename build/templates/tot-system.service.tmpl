@@ -1,0 +1,19 @@
+[Unit]
+Description=tot-system
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/tot-system.pid
+Environment=NODE_CONFIG_DIR=/etc/tot/system/
+
+ExecStart=/usr/bin/node /usr/src/tot/system/src/index.js
+ExecStop=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target 

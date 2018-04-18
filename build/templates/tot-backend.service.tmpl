@@ -3,19 +3,21 @@ Description=tot-backend
 After=syslog.target
 After=network.target
 Requires=nginx.service
+Requires=tot-system.service
 
 [Service]
 Type=simple
 PIDFile=/run/tot-backend.pid
+Environment=NODE_CONFIG_DIR=/etc/tot/backend/
 
 User=tot
 Group=tot
 
-ExecStart=/usr/bin/tot-backend
+ExecStart=/usr/bin/node /usr/src/tot/backend/src/index.js
 ExecStop=/bin/kill -HUP $MAINPID
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
-Restart=on-failure
+Restart=always
 TimeoutSec=300
 
 [Install]
