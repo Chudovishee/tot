@@ -1,9 +1,40 @@
 #!/bin/bash
 
+function patch_listen {
+  source $1
+  LISTEN_EXISTS=0
+  for ARG in $ARGS
+  do
+    if [ "${ARG:0:19}" == "-web.listen-address" ]
+    then
+      LISTEN_EXISTS=1
+      break
+    fi
+  done
+
+  if [ "$LISTEN_EXISTS" -eq 0 ]
+  then
+    echo "" >> $1
+    echo "# This string added by tot for disable listen an all interfaces." >> $1
+    echo "# Remove it, if it need." >> $1
+    echo "ARGS=\"${ARGS} -web.listen-address=${2}\"" >> $1
+  fi  
+}
+
 id -u tot &>/dev/null || useradd -U tot
 chown -R tot:tot /var/lib/tot
 chown -R tot:tot /var/log/tot
 systemctl daemon-reload
+
+patch_listen /etc/default/prometheus-node-exporter 127.0.0.1:9100
+patch_listen /etc/default/prometheus 127.0.0.1:9090
+
+systemctl enable prometheus.service
+systemctl enable prometheus-node-exporter.service
+
+systemctl restart prometheus.service
+systemctl restart prometheus-node-exporter.service
+
 systemctl enable tot-backend.service
 systemctl enable tot-system.service
 systemctl start tot-backend.service
