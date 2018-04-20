@@ -33,6 +33,7 @@ docker run -it --rm \
   -p 8080:8080 \
   -p 8081:8081 \
   -p 9229:9229 \
+  -p 9090:9090 \
   -v "$(pwd)/data/var/lib/tot":"/var/lib/tot" \
   -v "$(pwd)/data/var/log/tot":"/var/log/tot" \
   -v "$(pwd)/data/etc/tot/backend":"/etc/tot/backend" \

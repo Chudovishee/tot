@@ -16,7 +16,18 @@ const router = new Router({
       name: 'HelloWorld',
       component: HelloWorld,
     },
-    adminRouter
+    adminRouter,
+    {
+      path: '/404',
+      name: '404',
+      component: () => import(/* webpackChunkName: 'errors' */ '@/pages/errors/404')
+    },
+    {
+      path: '/403',
+      name: '403',
+      component: () => import(/* webpackChunkName: 'errors' */ '@/pages/errors/403')
+    },
+    { path: '*', redirect: '/404' },
   ]
 });
 
@@ -29,6 +40,14 @@ router.beforeEach((to, from, next) => {
   }
   else {
     next();
+  }
+});
+router.beforeEach((to, from, next) => {
+  if ((to.meta && to.meta.access <= store.getters.accessLevel) || !to.meta || !to.meta.access) {
+    next();
+  }
+  else {
+    next({ path: '/403' });
   }
 });
 

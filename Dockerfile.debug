@@ -1,7 +1,7 @@
 FROM debian
 
 RUN apt-get update
-RUN apt-get install -y dpkg debconf debhelper lintian curl procps nginx
+RUN apt-get install -y dpkg debconf debhelper lintian curl procps nginx prometheus
 RUN apt-get upgrade -y
 
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -

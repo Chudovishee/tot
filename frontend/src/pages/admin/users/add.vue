@@ -75,7 +75,7 @@ export default {
       this.$refs.addUserForm.validate((valid) => {
         if (valid) {
           this.$store.dispatch(ADD_USER, this.addUserForm)
-            .catch(error => this.handleError(error.response && error.response.data));
+            .catch(error => this.handleError(error.response));
         }
       });
     }

@@ -38,6 +38,20 @@ export default {
     current: null,
     list: [],
   },
+  getters: {
+    accessLevel(state) {
+      return (state.current && state.current.access) || SECURE_ALL;
+    },
+    isAdmin(state) {
+      return state.current && state.current.access >= SECURE_ADMIN;
+    },
+    isConfigure(state) {
+      return state.current && state.current.access >= SECURE_CONFIGURE;
+    },
+    isUser(state) {
+      return state.current && state.current.access >= SECURE_USER;
+    }
+  },
   mutations: {
     [FETCH_CURRENT_USER_SUCCESS](state, payload) {
       state.current = payload;
@@ -57,7 +71,6 @@ export default {
     [FETCH_USERS_ERROR](state) {
       state.list = [];
     }
-
   },
   actions: {
     [AUTH_API_CALL]({ commit }, apiCall) {
@@ -71,7 +84,7 @@ export default {
     [FETCH_CURRENT_USER]({ commit }) {
       return getCurrentUser()
         .then((response) => {
-          commit(FETCH_CURRENT_USER_SUCCESS, response);
+          commit(FETCH_CURRENT_USER_SUCCESS, response.data);
         })
         .catch((error) => {
           commit(FETCH_CURRENT_USER_ERROR, error);

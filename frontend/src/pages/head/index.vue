@@ -5,7 +5,11 @@
 
     <el-menu-item index="1">Processing Center</el-menu-item>
     <el-menu-item index="3">Info</el-menu-item>
-    <el-menu-item index="admin">Administration</el-menu-item>
+    <el-menu-item
+      v-if="$store.getters.isAdmin"
+      index="admin">
+      Administration
+    </el-menu-item>
     <el-menu-item index="logout">Log out</el-menu-item>
   </app-navigation>
 </template>

@@ -43,5 +43,6 @@ export default {
 }
 .app-body {
   padding-top: 61px;
+  height: 100%;
 }
 </style>
