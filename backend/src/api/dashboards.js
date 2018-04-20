@@ -1,5 +1,4 @@
 const express = require('express');
-// const logger = require('../services/logger');
 const secure = require('../services/secure');
 
 const Dashboards = require('../models/dashboards');

@@ -3,6 +3,7 @@ const { assert } = require('chai');
 const chaiHttp = require('chai-http');
 const low = require('lowdb');
 
+const Logger = require('../utils/logger');
 const Adapter = require('../utils/testAdapter');
 const Server = require('../../src/server');
 
@@ -12,7 +13,7 @@ describe('csrf', async () => {
   let serverData;
 
   before(() => {
-    serverData = Server(low(new Adapter()));
+    serverData = Server(low(new Adapter.ResolveAdapter()), Logger());
   });
   after(() => serverData.server.close());
 

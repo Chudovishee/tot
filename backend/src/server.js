@@ -3,7 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-const logger = require('./services/logger');
 const version = require('./api/version');
 const users = require('./api/users');
 const dashboards = require('./api/dashboards');
@@ -14,7 +13,7 @@ const host = config.get('host');
 const port = config.get('port');
 const apiPrefix = config.get('api_prefix');
 
-function Server(db) {
+function Server(db, logger) {
   const app = express();
   app.use(csrfService);
   app.use(bodyParser.json());
@@ -22,7 +21,7 @@ function Server(db) {
   app.use(userService(db));
 
   app.use(`${apiPrefix}/version`, version);
-  app.use(`${apiPrefix}/users`, users(db));
+  app.use(`${apiPrefix}/users`, users(db, logger));
   app.use(`${apiPrefix}/dashboards`, dashboards(db));
 
   const server = app.listen(port, host);

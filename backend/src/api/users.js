@@ -2,45 +2,48 @@ const _ = require('lodash');
 const express = require('express');
 const config = require('config');
 
-const logger = require('../services/logger');
 const secure = require('../services/secure');
 const User = require('../models/user');
 const Users = require('../models/users');
 
-function userApi(db) {
+function userApi(db, logger) {
   const cookieMaxAge = config.get('user_token_max_age');
   const router = express.Router();
 
-  router.post('/:user/login', secure.ALL, async (req, res) => {
+  router.post('/:user/login', secure.ALL, (req, res) => {
     const user = new User({ name: req.params.user })
       .fetch(db);
 
-    const accessToken = await user.login(req.body.password);
+    user.login(req.body.password)
+      .then((accessToken) => {
+        if (accessToken) {
+          res.cookie('access-token', accessToken, {
+            maxAge: cookieMaxAge,
+            httpOnly: true
+          });
 
-    if (accessToken) {
-      res.cookie('access-token', accessToken, {
-        maxAge: cookieMaxAge,
-        httpOnly: true
+          res.status(200)
+            .json({ token: accessToken });
+        }
+        else {
+          res.status(403).end();
+        }
+      })
+      .catch((error) => {
+        logger.error(`Unable login with db error: ${error}`);
+        return res.status(500).end();
       });
-
-      res.status(200)
-        .json({ token: accessToken });
-
-      logger.info(`success login, user: ${user.name}`);
-    }
-    else {
-      res.status(403).end();
-      logger.info(`fail login, user: ${user.name}`);
-    }
   });
 
-  router.post('/current/logout', secure.USER, async (req, res) => {
-    await new User({ name: req.user.name })
+  router.post('/current/logout', secure.USER, (req, res) => {
+    new User({ name: req.user.name })
       .fetch(db)
-      .logout();
-
-    res.status(200).end();
-    logger.info(`success logout, user: ${req.user.name}(${req.user.id})`);
+      .logout()
+      .then(() => res.status(200).end())
+      .catch((error) => {
+        logger.error(`Unable logout with db error: ${error}`);
+        return res.status(500).end();
+      });
   });
 
   router.get('/current', secure.USER, (req, res) => {
@@ -63,16 +66,20 @@ function userApi(db) {
     res.json(new Users().fetch(db).publish());
   });
 
-  router.post('/', secure.ADMIN, async (req, res) => {
+  router.post('/', secure.ADMIN, (req, res) => {
     const user = new User(_.pick(req.body, ['name', 'access']));
     user.setPassword(req.body.password);
     const errors = user.createValidate(db);
 
     if (!errors || Object.keys(errors).length === 0) {
-      await new Users().fetch(db)
+      new Users().fetch(db)
         .push(user)
-        .write();
-      res.status(200).end();
+        .write()
+        .then(() => res.status(200).end())
+        .catch((error) => {
+          logger.error(`Unable write user with db error: ${error}`);
+          return res.status(500).end();
+        });
     }
     else {
       res.status(400)
@@ -80,7 +87,7 @@ function userApi(db) {
     }
   });
 
-  router.put('/:user', secure.ADMIN, async (req, res) => {
+  router.put('/:user', secure.ADMIN, (req, res) => {
     const user = new User({ name: req.params.user })
       .fetch(db);
 
@@ -93,9 +100,13 @@ function userApi(db) {
       const errors = newUser.editValidate();
 
       if (!errors || Object.keys(errors).length === 0) {
-        await user.assign(newUser)
-          .write();
-        res.status(200).end();
+        user.assign(newUser)
+          .write()
+          .then(() => res.status(200).end())
+          .catch((error) => {
+            logger.error(`Unable write user with db error: ${error}`);
+            return res.status(500).end();
+          });
       }
       else {
         res.status(400)
@@ -107,14 +118,18 @@ function userApi(db) {
     }
   });
 
-  router.delete('/:user', secure.ADMIN, async (req, res) => {
+  router.delete('/:user', secure.ADMIN, (req, res) => {
     const user = new User({ name: req.params.user })
       .fetch(db);
     if (user.value()) {
-      await new Users().fetch(db)
+      new Users().fetch(db)
         .remove(user)
-        .write();
-      res.status(200).end();
+        .write()
+        .then(() => res.status(200).end())
+        .catch((error) => {
+          logger.error(`Unable delete user with db error: ${error}`);
+          return res.status(500).end();
+        });
     }
     else {
       res.status(404).end();
