@@ -10,23 +10,6 @@ const Base = require('./base');
 
 const cookieMaxAge = config.get('user_token_max_age');
 
-// function assignPreproccess(...args) {
-//   args = _.map(args, (obj) => {
-//     if (obj instanceof Base) {
-//       return obj.value();
-//     }
-//     return obj;
-//   });
-
-//   const newPasswordArg = _(args).reverse()
-//     .find(arg => arg.password);
-
-//   if (newPasswordArg) {
-//     return _.assign(...args, { password: sha256(String(newPasswordArg.password)) });
-//   }
-//   return _.assign(...args);
-// }
-
 class User extends Base {
   fetch(db) {
     this.data = db.get('users')
