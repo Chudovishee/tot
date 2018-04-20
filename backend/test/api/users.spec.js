@@ -7,13 +7,7 @@ const Adapter = require('../utils/testAdapter');
 const Server = require('../../src/server');
 const dbMock = require('../db-mock/user');
 const request = require('../utils/apiRequest');
-
-function getUserToken(db, user) {
-  return db.get('users')
-    .find({ name: user })
-    .value()
-    .token;
-}
+const getUserToken = require('../utils/getUserToken');
 
 describe('users api', async () => {
   describe('negative', () => {

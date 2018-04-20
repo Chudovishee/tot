@@ -22,7 +22,7 @@ function Server(db, logger) {
 
   app.use(`${apiPrefix}/version`, version);
   app.use(`${apiPrefix}/users`, users(db, logger));
-  app.use(`${apiPrefix}/dashboards`, dashboards(db));
+  app.use(`${apiPrefix}/dashboards`, dashboards(db, logger));
 
   const server = app.listen(port, host);
   logger.info(`Running on http://${host}:${port}`);

@@ -7,8 +7,12 @@ class Dashboard extends Base {
     return this;
   }
 
+  shortPublish() {
+    return this.data.pick(['name', 'description']).value();
+  }
+
   publish() {
-    return this.data.pick(['name']).value();
+    return this.data.pick(['name', 'description', 'grid']).value();
   }
 }
 

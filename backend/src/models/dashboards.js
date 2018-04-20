@@ -8,7 +8,7 @@ class Dashboards extends BaseCollection {
   }
 
   publish() {
-    return this.data.map(dashboard => new Dashboard(dashboard).publish()).value();
+    return this.data.map(dashboard => new Dashboard(dashboard).shortPublish()).value();
   }
 }
 
