@@ -6,6 +6,7 @@ import store from '@/store';
 import { FETCH_CURRENT_USER } from '@/store/users';
 
 import adminRouter from '@/pages/admin/router';
+import dashboardsRouter from '@/pages/dashboards/router';
 
 Vue.use(Router);
 
@@ -17,6 +18,7 @@ const router = new Router({
       component: HelloWorld,
     },
     adminRouter,
+    dashboardsRouter,
     {
       path: '/404',
       name: '404',

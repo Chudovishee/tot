@@ -1,16 +1,19 @@
 <template>
   <app-navigation class="app-head"
     :level="0"
-    @select="select">
+    @navigate="navigate">
 
-    <el-menu-item index="1">Processing Center</el-menu-item>
-    <el-menu-item index="3">Info</el-menu-item>
+    <el-menu-item
+      v-if="$store.getters.isUser"
+      index="dashboards">
+      Dashboards
+    </el-menu-item>
     <el-menu-item
       v-if="$store.getters.isAdmin"
       index="admin">
       Administration
     </el-menu-item>
-    <el-menu-item index="logout">Log out</el-menu-item>
+    <el-menu-item index="logout" no-route>Log out</el-menu-item>
   </app-navigation>
 </template>
 
@@ -24,7 +27,7 @@ export default {
     AppNavigation
   },
   methods: {
-    select(index) {
+    navigate(index) {
       if (index === 'logout') {
         this.$store.dispatch(LOGOUT);
       }

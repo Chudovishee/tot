@@ -4,6 +4,9 @@ export default {
   path: '/admin',
   name: 'admin',
   redirect: '/admin/users',
+  meta: {
+    access: SECURE_ADMIN
+  },
   component: () => import(/* webpackChunkName: 'admin' */ './index'),
   children: [
     {

@@ -12,7 +12,7 @@ function dashboardsApi(db) {
   });
 
   router.get('/:dashboard', secure.USER, async (req, res) => {
-    const dashboard = new Dashboard({ name: req.params.dashboard })
+    const dashboard = new Dashboard({ id: req.params.dashboard })
       .fetch(db);
 
     if (dashboard.value()) {
