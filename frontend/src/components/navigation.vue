@@ -1,9 +1,9 @@
 <script>
-import AppLevelMenu from './levelMenu';
+import TotLevelMenu from './levelMenu';
 
 export default {
-  name: 'AppNavigation',
-  extends: AppLevelMenu,
+  name: 'TotNavigation',
+  extends: TotLevelMenu,
   mounted() {
     this.$on('select', this.navigate);
     this.activeIndex = this.getActiveIndex();

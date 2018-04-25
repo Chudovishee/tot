@@ -1,5 +1,5 @@
 <template>
-  <app-error class="app-error-403">
+  <tot-error class="tot-error-403">
     <template slot="head">403</template>
     <template slot="title">The page you're looking for is unavailable for you.</template>
     <template slot="message">
@@ -7,16 +7,16 @@
       <p>Try to log out and log in again.</p>
         <p>Please contact your administrator if you think this is a mistake.</p>
     </template>
-  </app-error>
+  </tot-error>
 </template>
 
 <script>
-import AppError from '@/components/error';
+import TotError from '@/components/error';
 
 export default {
-  name: 'AppError403',
+  name: 'TotError403',
   components: {
-    AppError
+    TotError
   }
 };
 </script>

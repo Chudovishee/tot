@@ -19,7 +19,7 @@ import {
 } from '@/store/users';
 
 export default {
-  name: 'AppAccessSelect',
+  name: 'TotAccessSelect',
   props: {
     value: Number
   },

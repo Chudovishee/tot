@@ -1,6 +1,6 @@
 <template>
-  <app-level-menu
-    class="app-dashboards-head"
+  <tot-level-menu
+    class="tot-dashboards-head"
     ref="navigation"
     :level="1"
     @select="navigation">
@@ -13,18 +13,18 @@
     </el-menu-item>
 
     <el-menu-item index="add-dashboard">
-      <i class="el-icon-circle-plus"/>
+      <i class="el-icon-circle-plus"/>New
     </el-menu-item>
-  </app-level-menu>
+  </tot-level-menu>
 </template>
 
 <script>
-import AppLevelMenu from '@/components/levelMenu';
+import TotLevelMenu from '@/components/levelMenu';
 
 export default {
-  name: 'AppDashboardsHead',
+  name: 'TotDashboardsHead',
   components: {
-    AppLevelMenu
+    TotLevelMenu
   },
   mounted() {
     this.updateActiveIndex();
@@ -37,15 +37,15 @@ export default {
   methods: {
     navigation(name) {
       if (name === 'add-dashboard') {
-        console.log(name);
+        this.$emit('addDashboard');
       }
       else {
         this.$router.push({ name: 'dashboards', params: { dashboard: name.substr(('dashboard-').length) } });
       }
     },
     updateActiveIndex() {
-      this.$refs.navigation.activeIndex = 'dashboard-' + this.$route.params.dashboard;
-    }
+      this.$refs.navigation.activeIndex = `dashboard-${this.$route.params.dashboard}`;
+    },
   },
   watch: {
     $route() {

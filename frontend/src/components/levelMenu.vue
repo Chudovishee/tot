@@ -13,7 +13,7 @@
 import { Menu as ElMenu } from 'element-ui';
 
 export default {
-  name: 'AppLevelMenu',
+  name: 'TotLevelMenu',
   extends: ElMenu,
   props: {
     level: {

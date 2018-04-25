@@ -1,5 +1,5 @@
 <template>
-  <app-navigation class="app-head"
+  <tot-navigation class="tot-head"
     :level="0"
     @navigate="navigate">
 
@@ -14,17 +14,17 @@
       Administration
     </el-menu-item>
     <el-menu-item index="logout" no-route>Log out</el-menu-item>
-  </app-navigation>
+  </tot-navigation>
 </template>
 
 <script>
-import AppNavigation from '@/components/navigation';
+import TotNavigation from '@/components/navigation';
 import { LOGOUT } from '@/store/users';
 
 export default {
-  name: 'AppHead',
+  name: 'TotHead',
   components: {
-    AppNavigation
+    TotNavigation
   },
   methods: {
     navigate(index) {

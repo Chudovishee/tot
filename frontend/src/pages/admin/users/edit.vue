@@ -1,16 +1,16 @@
 <template>
-  <div class="app-admin-edit-user">
+  <div class="tot-admin-edit-user">
     <el-form
       :model="editUserForm"
       label-width="120px"
-      class="app-admin-edit-user__form">
+      class="tot-admin-edit-user__form">
 
       <el-form-item label="Password" prop="password" :error="errors.password">
         <el-input type="password" v-model="editUserForm.password" auto-complete="off"/>
       </el-form-item>
 
       <el-form-item label="Access level" prop="access" :error="errors.access">
-        <app-access-select v-model="editUserForm.access"/>
+        <tot-access-select v-model="editUserForm.access"/>
       </el-form-item>
 
       <el-form-item :error="otherErrors">
@@ -22,17 +22,17 @@
 </template>
 
 <script>
-import AppAccessSelect from '@/components/accessSelect';
+import TotAccessSelect from '@/components/accessSelect';
 import FormErrors from '@/mixins/formErrors';
 import {
   EDIT_USER
 } from '@/store/users';
 
 export default {
-  name: 'AppAdminEditUser',
+  name: 'TotAdminEditUser',
   mixins: [FormErrors],
   components: {
-    AppAccessSelect
+    TotAccessSelect
   },
   props: {
     value: Object

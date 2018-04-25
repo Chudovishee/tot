@@ -1,9 +1,9 @@
 <template>
-  <div id="app">
-    <app-login v-if="unauthorized"/>
+  <div id="tot">
+    <tot-login v-if="unauthorized"/>
     <template v-else>
-      <app-head/>
-      <div class="app-body">
+      <tot-head/>
+      <div class="tot-body">
         <router-view/>
       </div>
     </template>
@@ -11,16 +11,16 @@
 </template>
 
 <script>
-import '@/assets/styles/app.scss';
+import '@/assets/styles/tot.scss';
 
-import AppLogin from '@/pages/login';
-import AppHead from '@/pages/head';
+import TotLogin from '@/pages/login';
+import TotHead from '@/pages/head';
 
 export default {
-  name: 'App',
+  name: 'Tot',
   components: {
-    AppLogin,
-    AppHead
+    TotLogin,
+    TotHead
   },
   computed: {
     unauthorized() {
@@ -31,17 +31,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#app {
+#tot {
   height: 100%;
 }
-.app-head {
+.tot-head {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 2;
 }
-.app-body {
+.tot-body {
   padding-top: 61px;
   height: 100%;
 }

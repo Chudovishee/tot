@@ -1,17 +1,17 @@
 <template>
-  <div class="app-admin">
-    <app-admin-head/>
+  <div class="tot-admin">
+    <tot-admin-head/>
     <router-view/>
   </div>
 </template>
 
 <script>
-import AppAdminHead from './head';
+import TotAdminHead from './head';
 
 export default {
-  name: 'AppAdmin',
+  name: 'TotAdmin',
   components: {
-    AppAdminHead
+    TotAdminHead
   }
 };
 </script>

@@ -1,13 +1,13 @@
 <template>
-  <div class="app-error">
-    <div class="app-error__head">
+  <div class="tot-error">
+    <div class="tot-error__head">
       <slot name="head">Error</slot>
     </div>
-    <div class="app-error__title">
+    <div class="tot-error__title">
       <slot name="title">The page you're looking for does not work.</slot>
     </div>
-    <hr class="app-error__hr"/>
-    <div class="app-error__message">
+    <hr class="tot-error__hr"/>
+    <div class="tot-error__message">
       <slot name="message">
         <p>Make sure the address is correct and that the page hasn't moved.</p>
         <p>Please contact your administrator if you think this is a mistake.</p>
@@ -17,11 +17,11 @@
 </template>
 <script>
 export default {
-  name: 'AppError'
+  name: 'TotError'
 };
 </script>
 <style lang="scss" scoped>
-.app-error {
+.tot-error {
   height: 100%;
   display: flex;
   flex-direction: column;

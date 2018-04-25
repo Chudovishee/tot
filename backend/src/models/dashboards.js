@@ -1,9 +1,26 @@
+const _ = require('lodash');
+
+const Base = require('./base');
 const BaseCollection = require('./baseCollection');
 const Dashboard = require('./dashboard');
 
 class Dashboards extends BaseCollection {
   fetch(db) {
     this.data = db.get('dashboards');
+    return this;
+  }
+
+  push(...args) {
+    const toPush = _(args)
+      .map((model) => {
+        if (model instanceof Base) {
+          return model.value();
+        }
+        return model;
+      })
+      .map(model => _.defaults(model, { description: '', grid: [] }));
+
+    this.data = this.data.push(...toPush);
     return this;
   }
 

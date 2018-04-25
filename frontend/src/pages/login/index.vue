@@ -1,5 +1,5 @@
 <template>
-  <div class="app-login">
+  <div class="tot-login">
     <el-card>
       <el-form
         :model="loginForm"
@@ -7,7 +7,7 @@
         ref="loginForm"
         label-position="top"
         label-width="120px"
-        class="app-login__form">
+        class="tot-login__form">
 
         <el-form-item label="Name" prop="name">
           <el-input v-model="loginForm.name"/>
@@ -29,7 +29,7 @@
 import { LOGIN } from '@/store/users';
 
 export default {
-  name: 'AppLogin',
+  name: 'TotLogin',
   data() {
     return {
       loginForm: {
@@ -63,7 +63,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.app-login {
+.tot-login {
   text-align: center;
   height: 100%;
   display: flex;

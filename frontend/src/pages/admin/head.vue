@@ -1,17 +1,17 @@
 <template>
-  <app-navigation class="app-admin-head" :level="1">
+  <tot-navigation class="tot-admin-head" :level="1">
 
     <el-menu-item index="users">Users</el-menu-item>
-  </app-navigation>
+  </tot-navigation>
 </template>
 
 <script>
-import AppNavigation from '@/components/navigation';
+import TotNavigation from '@/components/navigation';
 
 export default {
-  name: 'AppAdminHead',
+  name: 'TotAdminHead',
   components: {
-    AppNavigation
+    TotNavigation
   }
 };
 </script>

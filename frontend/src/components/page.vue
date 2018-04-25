@@ -1,15 +1,15 @@
 <template>
-  <div class="app-page">
+  <div class="tot-page">
     <slot/>
   </div>
 </template>
 <script>
 export default {
-  name: 'AppPage'
+  name: 'TotPage'
 };
 </script>
 <style lang="scss" scoped>
-.app-page {
+.tot-page {
   max-width: 1280px;
   padding: 24px;
   margin: 0 auto;

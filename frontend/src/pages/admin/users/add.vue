@@ -1,5 +1,5 @@
 <template>
-  <el-card class="app-admin-add-user">
+  <el-card class="tot-admin-add-user">
     <div slot="header">
       Add new user
     </div>
@@ -9,7 +9,7 @@
       :rules="rules"
       ref="addUserForm"
       label-width="120px"
-      class="app-admin-add-user__form">
+      class="tot-admin-add-user__form">
 
       <el-form-item label="Name" prop="name" :error="errors.name">
         <el-input v-model="addUserForm.name"/>
@@ -20,7 +20,7 @@
       </el-form-item>
 
       <el-form-item label="Access level" prop="access" :error="errors.access">
-        <app-access-select v-model="addUserForm.access"/>
+        <tot-access-select v-model="addUserForm.access"/>
       </el-form-item>
 
       <el-form-item :error="otherErrors">
@@ -36,14 +36,14 @@ import {
   SECURE_USER,
   ADD_USER
 } from '@/store/users';
-import AppAccessSelect from '@/components/accessSelect';
+import TotAccessSelect from '@/components/accessSelect';
 import FormErrors from '@/mixins/formErrors';
 
 export default {
-  name: 'AppAdminAddUser',
+  name: 'TotAdminAddUser',
   mixins: [FormErrors],
   components: {
-    AppAccessSelect
+    TotAccessSelect
   },
   data() {
     return {

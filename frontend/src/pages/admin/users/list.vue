@@ -1,17 +1,17 @@
 <template>
-  <el-card class="app-admin-user-list">
+  <el-card class="tot-admin-user-list">
     <div slot="header">Users list</div>
 
     <div v-for="user in users"
       :key="user.name"
-      class="app-admin-user-list__user">
+      class="tot-admin-user-list__user">
 
-      <div class="app-admin-user-list__user-view">
-        <div class="app-admin-user-list__name">{{ user.name }}</div>
-        <div class="app-admin-user-list__access">
+      <div class="tot-admin-user-list__user-view">
+        <div class="tot-admin-user-list__name">{{ user.name }}</div>
+        <div class="tot-admin-user-list__access">
           {{ accessToString(user.access) }}
         </div>
-        <div class="app-admin-user-list__actions">
+        <div class="tot-admin-user-list__actions">
           <el-button v-if="editing[user.name]"
             icon="el-icon-arrow-down"
             size="small"
@@ -29,9 +29,9 @@
               icon="el-icon-delete"
               size="small"/>
 
-            <div class="app-admin-user-list__delete-confirm">
-              <div class="app-admin-user-list__delete-confirm-text">Are you sure to delete?</div>
-              <div class="app-admin-user-list__delete-confirm-button">
+            <div class="tot-admin-user-list__delete-confirm">
+              <div class="tot-admin-user-list__delete-confirm-text">Are you sure to delete?</div>
+              <div class="tot-admin-user-list__delete-confirm-button">
                 <el-button
                   type="danger"
                   size="mini"
@@ -42,8 +42,8 @@
         </div>
       </div>
 
-      <app-admin-edit-user v-if="editing[user.name]"
-        class="app-admin-user-list__user-edit"
+      <tot-admin-edit-user v-if="editing[user.name]"
+        class="tot-admin-user-list__user-edit"
         :value="user"/>
     </div>
   </el-card>
@@ -58,7 +58,7 @@ import {
   SECURE_CONFIGURE,
   SECURE_ADMIN
 } from '@/store/users';
-import AppAdminEditUser from './edit';
+import TotAdminEditUser from './edit';
 
 const accessStrings = {
   [SECURE_ALL]: 'Base read access',
@@ -68,9 +68,9 @@ const accessStrings = {
 };
 
 export default {
-  name: 'AppAdminUsersList',
+  name: 'TotAdminUsersList',
   components: {
-    AppAdminEditUser
+    TotAdminEditUser
   },
   data() {
     return {
@@ -103,7 +103,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.app-admin-user-list {
+.tot-admin-user-list {
   /deep/ .el-card__body {
     padding: 0;
   }

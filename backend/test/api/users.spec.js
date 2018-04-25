@@ -295,7 +295,7 @@ describe('users api', async () => {
         .then((res) => {
           assert.equal(res.status, 400);
           assert.deepEqual(res.body, {
-            name: ['Name user name must be string with 4-20 characters'],
+            name: ['Name must be string with 4-20 characters'],
             access: ['10 is not included in the list']
           });
         });
@@ -311,7 +311,7 @@ describe('users api', async () => {
         .then((res) => {
           assert.equal(res.status, 400);
           assert.deepEqual(res.body, {
-            name: ['Name user name must be string with 4-20 characters'],
+            name: ['Name must be string with 4-20 characters'],
           });
         });
 

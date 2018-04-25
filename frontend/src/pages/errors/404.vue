@@ -1,17 +1,17 @@
 <template>
-  <app-error class="app-error-404">
+  <tot-error class="tot-error-404">
     <template slot="head">404</template>
     <template slot="title">The page you're looking for could not be found.</template>
-  </app-error>
+  </tot-error>
 </template>
 
 <script>
-import AppError from '@/components/error';
+import TotError from '@/components/error';
 
 export default {
-  name: 'AppError404',
+  name: 'TotError404',
   components: {
-    AppError
+    TotError
   }
 };
 </script>

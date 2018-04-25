@@ -1,27 +1,27 @@
 <template>
-  <app-page class="app-admin-users">
-    <app-admin-add-user/>
-    <app-admin-users-list/>
-  </app-page>
+  <tot-page class="tot-admin-users">
+    <tot-admin-add-user/>
+    <tot-admin-users-list/>
+  </tot-page>
 </template>
 
 <script>
-import AppPage from '@/components/page';
-import AppAdminAddUser from './add';
-import AppAdminUsersList from './list';
+import TotPage from '@/components/page';
+import TotAdminAddUser from './add';
+import TotAdminUsersList from './list';
 
 export default {
-  name: 'AppAdminUsers',
+  name: 'TotAdminUsers',
   components: {
-    AppAdminAddUser,
-    AppPage,
-    AppAdminUsersList
+    TotAdminAddUser,
+    TotPage,
+    TotAdminUsersList
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.app-admin-users {
+.tot-admin-users {
   /deep/ .el-card {
     &:not(:last-child) {
       margin-bottom: 24px;

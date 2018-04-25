@@ -14,12 +14,26 @@ class Base {
   }
 
   push(...args) {
+    args = _.map(args, (model) => {
+      if (model instanceof Base) {
+        return model.value();
+      }
+      return model;
+    });
+
     this.data = this.data.push(...args);
     return this;
   }
 
   assign(...args) {
+    args = _.map(args, (obj) => {
+      if (obj instanceof Base) {
+        return obj.value();
+      }
+      return obj;
+    });
     this.data = this.data.assign(...args);
+
     return this;
   }
 

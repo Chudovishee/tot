@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const crypto = require('crypto');
 const config = require('config');
 const validate = require('validate.js');
@@ -19,18 +18,6 @@ class User extends Base {
 
   publish() {
     return this.data.pick(['name', 'token_expire', 'access']).value();
-  }
-
-  assign(...args) {
-    args = _.map(args, (obj) => {
-      if (obj instanceof Base) {
-        return obj.value();
-      }
-      return obj;
-    });
-    this.data = this.data.assign(...args);
-
-    return this;
   }
 
   async login(password) {
@@ -71,7 +58,7 @@ class User extends Base {
         presence: true,
         format: {
           pattern: /^[\w]{4,20}$/,
-          message: 'user name must be string with 4-20 characters'
+          message: 'must be string with 4-20 characters'
         }
       },
       password: {
