@@ -8,6 +8,8 @@
       v-if="!firstDashboard"
       @addDashboard="addDashboard"/>
 
+    <tot-dashboard :dashboard="$route.params.dashboard"/>
+
     <tot-dashboards-add :visible.sync="addDialogVisible"/>
   </div>
 </template>
@@ -19,13 +21,15 @@ import store from '@/store';
 import TotDashboardsHead from './head';
 import TotDashboardsEmpty from './empty';
 import TotDashboardsAdd from './add';
+import TotDashboard from './dashboard';
 
 export default {
   name: 'TotDashboards',
   components: {
     TotDashboardsHead,
     TotDashboardsEmpty,
-    TotDashboardsAdd
+    TotDashboardsAdd,
+    TotDashboard
   },
   data() {
     return {
@@ -36,7 +40,7 @@ export default {
     store.dispatch(FETCH_DASHBOARDS)
       .then(() => {
         next((vm) => {
-          if (vm.firstDashboard) {
+          if (vm.firstDashboard && !vm.$route.params.dashboard) {
             vm.$router.push({ name: 'dashboards', params: { dashboard: vm.firstDashboard.name } });
           }
         });

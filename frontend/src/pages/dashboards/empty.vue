@@ -4,8 +4,17 @@
       <i class="el-icon-warning"/>
     </template>
     <template slot="title">Dashboards not found.</template>
-    <template slot="message">
+
+    <template
+      v-if="$store.getters.isConfigure"
+      slot="message">
       <el-button type="text" @click="create">Create new dashboard</el-button>
+    </template>
+
+    <template
+      v-else
+      slot="message">
+      <p>Please contact your administrator or configurator for create new dashboard</p>
     </template>
   </tot-error>
 </template>

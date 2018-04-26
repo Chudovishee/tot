@@ -107,9 +107,7 @@ export default {
     },
     [ADD_USER]({ dispatch }, data) {
       return dispatch(AUTH_API_CALL, addUser(data))
-        .then(() => {
-          dispatch(FETCH_USERS);
-        })
+        .then(() => dispatch(FETCH_USERS))
         .catch((error) => {
           dispatch(FETCH_USERS);
           throw error;
@@ -132,9 +130,7 @@ export default {
     },
     [DELETE_USER]({ dispatch }, name) {
       return dispatch(AUTH_API_CALL, deleteUser(name))
-        .then(() => {
-          dispatch(FETCH_USERS);
-        })
+        .then(() => dispatch(FETCH_USERS))
         .catch((error) => {
           dispatch(FETCH_USERS);
           throw error;
@@ -142,8 +138,10 @@ export default {
     },
     [EDIT_USER]({ dispatch }, user) {
       return dispatch(AUTH_API_CALL, editUser(user.name, pick(user, ['password', 'access'])))
-        .then(() => {
+        .then(() => dispatch(FETCH_USERS))
+        .catch((error) => {
           dispatch(FETCH_USERS);
+          throw error;
         });
     }
   }

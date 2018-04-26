@@ -7,3 +7,7 @@ export function getDashboards() {
 export function addDashboard(payload) {
   return axios.post('/api/dashboards', payload);
 }
+
+export function getDashboard(dashboard) {
+  return axios.get(`/api/dashboards/${dashboard}`);
+}

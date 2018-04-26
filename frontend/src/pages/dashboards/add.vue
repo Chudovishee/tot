@@ -31,6 +31,8 @@
 <script>
 import FormErrors from '@/mixins/formErrors';
 
+import { ADD_DASHBOARD } from '@/store/dashboards';
+
 export default {
   name: 'TotDashboardsAdd',
   mixins: [FormErrors],
@@ -73,8 +75,12 @@ export default {
       this.clearErrors();
       this.$refs.addDashboardForm.validate((valid) => {
         if (valid) {
-          // this.$store.dispatch(ADD_USER, this.addUserForm)
-          //   .catch(error => this.handleError(error.response));
+          this.$store.dispatch(ADD_DASHBOARD, this.addDashboardForm)
+            .then(() => {
+              this.$emit('update:visible', false);
+              this.$router.push({ name: 'dashboards', params: { dashboard: this.addDashboardForm.name } });
+            })
+            .catch(error => this.handleError(error.response));
         }
       });
     }
