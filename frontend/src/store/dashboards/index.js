@@ -61,7 +61,7 @@ export default {
     [OPEN_DASHBOARD]({ dispatch, commit }, dashboard) {
       return dispatch(AUTH_API_CALL, getDashboard(dashboard))
         .then((response) => {
-          commit(OPEN_DASHBOARD_SUCCESS, response);
+          commit(OPEN_DASHBOARD_SUCCESS, response.data);
         })
         .catch((error) => {
           commit(OPEN_DASHBOARD_ERROR, error);

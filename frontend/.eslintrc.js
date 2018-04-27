@@ -44,9 +44,9 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']
     }],
-    // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'brace-style': ['error', 'stroustrup'],
-    'comma-dangle': 0
+    'comma-dangle': 0,
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'object-curly-newline': ["error", { "consistent": true }]
   }
 }

@@ -1,4 +1,4 @@
-const validate = require('validate.js');
+const validate = require('../utils/validate');
 
 const Base = require('./base');
 
@@ -33,10 +33,45 @@ class Dashboard extends Base {
           pattern: /^[\w ]{0,64}$/,
           message: 'must be string with 0-64 characters'
         }
+      },
+      grid: {
+        dashboardGrid: true
       }
     });
 
     if ((!errors || Object.keys(errors).length === 0) &&
+      db.get('dashboards').find({ name: fields.name }).value()) {
+      errors = {
+        name: [`Dashboard with name "${fields.name}" already exists`]
+      };
+    }
+
+    return errors;
+  }
+
+  editValidate(db, oldName) {
+    const fields = this.data.value();
+
+    let errors = validate(fields, {
+      name: {
+        format: {
+          pattern: /^[\w]{1,20}$/,
+          message: 'must be string with 1-20 characters'
+        }
+      },
+      description: {
+        format: {
+          pattern: /^[\w ]{0,64}$/,
+          message: 'must be string with 0-64 characters'
+        }
+      },
+      grid: {
+        dashboardGrid: true
+      }
+    });
+
+    if ((!errors || Object.keys(errors).length === 0) &&
+      fields.name !== oldName &&
       db.get('dashboards').find({ name: fields.name }).value()) {
       errors = {
         name: [`Dashboard with name "${fields.name}" already exists`]

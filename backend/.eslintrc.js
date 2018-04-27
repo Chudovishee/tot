@@ -11,6 +11,7 @@ module.exports = {
     'no-param-reassign': 0,
     'brace-style': ['error', 'stroustrup'],
     'no-await-in-loop': 0,
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'object-curly-newline': ["error", { "consistent": true }]
   }
 };

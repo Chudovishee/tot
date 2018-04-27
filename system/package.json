@@ -6,8 +6,8 @@
   "scripts": {
     "start": "NODE_CONFIG_DIR=/etc/tot/system/ node ./src/index.js",
     "dev": "NODE_ENV=development npm run lint && node --inspect=0.0.0.0 ./src/index.js",
-    "lint": "eslint --ext .js src test",
-    "test": "LOG_LEVEL=error npm run lint && ./node_modules/.bin/mocha"
+    "lint": "NODE_ENV=production eslint --ext .js src test",
+    "test": "LOG_LEVEL=error eslint --ext .js src test && ./node_modules/.bin/mocha"
   },
   "dependencies": {
     "express": "^4.16.1",

@@ -70,12 +70,8 @@ describe('dashboards api', () => {
         name: 'one',
         description: 'one one one',
         grid: [
-          {
-            span: 12
-          },
-          {
-            span: 12
-          }
+          { i: '0', x: 0, y: 0, w: 1, h: 1 },
+          { i: '1', x: 1, y: 0, w: 1, h: 1 }
         ]
       };
       await request(serverData.app)
@@ -125,6 +121,10 @@ describe('dashboards api', () => {
         .send({
           name: 'three',
           description: 'three three three',
+          grid: [
+            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0' },
+            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1' }
+          ],
           more: 'more'
         })
         .then((res) => {
@@ -136,6 +136,10 @@ describe('dashboards api', () => {
 
           assert.equal(dbDashboard.name, 'three');
           assert.equal(dbDashboard.description, 'three three three');
+          assert.deepEqual(dbDashboard.grid, [
+            { x: 0, y: 0, w: 2, h: 2, i: '0' },
+            { x: 2, y: 2, w: 2, h: 2, i: '1' }
+          ]);
           assert.notExists(dbDashboard.more);
         });
 
@@ -162,12 +166,50 @@ describe('dashboards api', () => {
         .send({
           name: '=-=-=-',
           description: '=-=-=',
+          grid: [
+            { i: '0' },
+            { i: '0' }
+          ]
         })
         .then((res) => {
           assert.equal(res.status, 400);
           assert.deepEqual(res.body, {
             name: ['Name must be string with 1-20 characters'],
-            description: ['Description must be string with 0-64 characters']
+            description: ['Description must be string with 0-64 characters'],
+            grid: ['Grid must have String "i" and Integer "x", "y", "w", "h" properties']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0 },
+            { i: '0', x: 0, y: 0, w: 0, h: 0 }
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid must have items with unique "i" properties']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'six',
+          grid: [
+            { i: '0', x: '0', y: 0, w: 0, h: 0 }
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid must have String "i" and Integer "x", "y", "w", "h" properties']
           });
         });
 
@@ -239,6 +281,69 @@ describe('dashboards api', () => {
         })
         .then((res) => {
           assert.equal(res.status, 200);
+        });
+    });
+
+    it('put', async () => {
+      await request(serverData.app)
+        .put('/api/dashboards/one')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'three',
+          description: 'three three three',
+          grid: [
+            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0' },
+            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1' },
+            { x: 4, y: 4, w: 2, h: 2, k: 'kkk', i: '2' }
+          ],
+          more: 'more'
+        })
+        .then((res) => {
+          assert.equal(res.status, 200);
+          const dbDashboard = db.get('dashboards')
+            .find({ name: 'three' })
+            .value();
+
+          assert.equal(dbDashboard.name, 'three');
+          assert.equal(dbDashboard.description, 'three three three');
+          assert.deepEqual(dbDashboard.grid, [
+            { x: 0, y: 0, w: 2, h: 2, i: '0' },
+            { x: 2, y: 2, w: 2, h: 2, i: '1' },
+            { x: 4, y: 4, w: 2, h: 2, i: '2' }
+          ]);
+          assert.notExists(dbDashboard.more);
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/one')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({ name: 'three' })
+        .then((res) => {
+          assert.equal(res.status, 404);
+          assert.deepEqual(res.body, {});
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/three')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'three',
+          description: '3 3 3'
+        })
+        .then((res) => {
+          debugger;
+          assert.equal(res.status, 200);
+          const dbDashboard = db.get('dashboards')
+            .find({ name: 'three' })
+            .value();
+
+          assert.equal(dbDashboard.name, 'three');
+          assert.equal(dbDashboard.description, '3 3 3');
+          assert.deepEqual(dbDashboard.grid, [
+            { x: 0, y: 0, w: 2, h: 2, i: '0' },
+            { x: 2, y: 2, w: 2, h: 2, i: '1' },
+            { x: 4, y: 4, w: 2, h: 2, i: '2' }
+          ]);
         });
     });
   });

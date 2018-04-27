@@ -2,8 +2,10 @@
   <div class="tot-dashboard">
     <template v-if="dashboardData">
       <div class="tot-dashboard__head">
-        <div class="tot-dashboard__name">one</div>
-        <div class="tot-dashboard__description">one one one</div>
+        <div class="tot-dashboard__name">{{ dashboardData.name }}</div>
+        <div v-if="dashboardData.description" class="tot-dashboard__description">
+          {{ dashboardData.description }}
+        </div>
         <i class="el-icon-edit"/>
       </div>
 
@@ -60,12 +62,12 @@ export default {
     this.openDashboard();
   },
   computed: {
-    dashboardData() {      
+    dashboardData() {
       return this.$store.state.dashboards.open;
     }
   },
   watch: {
-    dashboard(val) {
+    dashboard() {
       this.openDashboard();
     }
   },

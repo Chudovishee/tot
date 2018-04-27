@@ -27,27 +27,18 @@ module.exports = {
       name: 'one',
       description: 'one one one',
       grid: [
-        {
-          span: 12
-        },
-        {
-          span: 12
-        }
+        { i: '0', x: 0, y: 0, w: 1, h: 1 },
+        { i: '1', x: 1, y: 0, w: 1, h: 1 }
       ]
     },
     {
       name: 'two',
       description: 'two two two',
       grid: [
-        {
-          span: 8
-        },
-        {
-          span: 8
-        },
-        {
-          span: 8
-        }
+        { i: '0', x: 0, y: 0, w: 1, h: 1 },
+        { i: '1', x: 1, y: 0, w: 1, h: 1 },
+        { i: '2', x: 0, y: 1, w: 1, h: 1 },
+        { i: '3', x: 1, y: 1, w: 1, h: 1 }
       ]
     }
   ]
