@@ -11,3 +11,7 @@ export function addDashboard(payload) {
 export function getDashboard(dashboard) {
   return axios.get(`/api/dashboards/${dashboard}`);
 }
+
+export function editDashboard(dashboard, payload) {
+  return axios.put(`/api/dashboards/${dashboard}`, payload);
+}

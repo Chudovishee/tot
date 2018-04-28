@@ -6,7 +6,7 @@
         <div v-if="dashboardData.description" class="tot-dashboard__description">
           {{ dashboardData.description }}
         </div>
-        <i class="el-icon-edit"/>
+        <i class="el-icon-edit" @click="edit"/>
       </div>
 
       <grid-layout
@@ -39,8 +39,6 @@
 <script>
 import { GridLayout, GridItem } from 'vue-grid-layout';
 
-import { OPEN_DASHBOARD } from '@/store/dashboards';
-
 export default {
   name: 'TotDashboardsGrid',
   components: {
@@ -58,24 +56,14 @@ export default {
       ]
     };
   },
-  mounted() {
-    this.openDashboard();
-  },
   computed: {
     dashboardData() {
-      return this.$store.state.dashboards.open;
-    }
-  },
-  watch: {
-    dashboard() {
-      this.openDashboard();
+      return this.$store.state.dashboards.open[this.dashboard];
     }
   },
   methods: {
-    openDashboard() {
-      if (this.dashboard) {
-        this.$store.dispatch(OPEN_DASHBOARD, this.dashboard);
-      }
+    edit() {
+      this.$emit('editDashboard');
     }
   }
 };
@@ -83,12 +71,19 @@ export default {
 
 <style lang="scss" scoped>
 .tot-dashboard {
-  /deep/ .el-card {
-    width: 100%;
-    height: 100%;
-  }
-  /deep/ .vue-grid-placeholder {
-    background: #ccc;
+  /deep/ {
+    .el-card {
+      width: 100%;
+      height: 100%;
+    }
+
+    .vue-grid-placeholder {
+      background: #ccc;
+    }
+
+    .el-icon-edit {
+      cursor: pointer;
+    }
   }
 
   &__head {

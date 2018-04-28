@@ -2,25 +2,32 @@
   <div class="tot-dashboards">
     <tot-dashboards-head
       v-if="firstDashboard"
-      @addDashboard="addDashboard"/>
+      @addDashboard="openAddDashboard"/>
 
     <tot-dashboards-empty
       v-if="!firstDashboard"
-      @addDashboard="addDashboard"/>
+      @addDashboard="openAddDashboard"/>
 
-    <tot-dashboard :dashboard="$route.params.dashboard"/>
+    <tot-dashboard
+      :dashboard="$route.params.dashboard"
+      @editDashboard="openEditDashboard"/>
 
-    <tot-dashboards-add :visible.sync="addDialogVisible"/>
+    <tot-dashboards-edit
+      :dashboard="editDashboard"
+      :visible.sync="editVisible"/>
   </div>
 </template>
 
 <script>
-import { FETCH_DASHBOARDS } from '@/store/dashboards';
+import {
+  FETCH_DASHBOARDS,
+  FETCH_DASHBOARD
+} from '@/store/dashboards';
 import store from '@/store';
 
 import TotDashboardsHead from './head';
 import TotDashboardsEmpty from './empty';
-import TotDashboardsAdd from './add';
+import TotDashboardsEdit from './edit';
 import TotDashboard from './dashboard';
 
 export default {
@@ -28,22 +35,32 @@ export default {
   components: {
     TotDashboardsHead,
     TotDashboardsEmpty,
-    TotDashboardsAdd,
+    TotDashboardsEdit,
     TotDashboard
   },
   data() {
     return {
-      addDialogVisible: false
+      editVisible: false,
+      editDashboard: null
     };
   },
   beforeRouteEnter(to, from, next) {
     store.dispatch(FETCH_DASHBOARDS)
       .then(() => {
-        next((vm) => {
-          if (vm.firstDashboard && !vm.$route.params.dashboard) {
-            vm.$router.push({ name: 'dashboards', params: { dashboard: vm.firstDashboard.name } });
-          }
-        });
+        if (store.state.dashboards.list[0] && !to.params.dashboard) {
+          next({ name: 'dashboards', params: { dashboard: store.state.dashboards.list[0].name } });
+        }
+        else if (to.params.dashboard) {
+          store.dispatch(FETCH_DASHBOARD, to.params.dashboard)
+            .then(() => next())
+            .catch((error) => {
+              next();
+              throw error;
+            });
+        }
+        else {
+          next();
+        }
       });
   },
   beforeRouteUpdate(to, from, next) {
@@ -51,7 +68,12 @@ export default {
       next({ name: 'dashboards', params: { dashboard: this.firstDashboard.name } });
     }
     else {
-      next();
+      store.dispatch(FETCH_DASHBOARD, to.params.dashboard)
+        .then(() => next())
+        .catch((error) => {
+          next();
+          throw error;
+        });
     }
   },
   computed: {
@@ -60,8 +82,13 @@ export default {
     }
   },
   methods: {
-    addDashboard() {
-      this.addDialogVisible = true;
+    openAddDashboard() {
+      this.editVisible = true;
+      this.editDashboard = null;
+    },
+    openEditDashboard() {
+      this.editVisible = true;
+      this.editDashboard = this.$route.params.dashboard;
     }
   }
 };

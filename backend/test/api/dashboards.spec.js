@@ -331,7 +331,6 @@ describe('dashboards api', () => {
           description: '3 3 3'
         })
         .then((res) => {
-          debugger;
           assert.equal(res.status, 200);
           const dbDashboard = db.get('dashboards')
             .find({ name: 'three' })
@@ -344,6 +343,62 @@ describe('dashboards api', () => {
             { x: 2, y: 2, w: 2, h: 2, i: '1' },
             { x: 4, y: 4, w: 2, h: 2, i: '2' }
           ]);
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/three')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          grid: [
+            { x: 0, y: 0, w: 2, h: 2, i: '3' },
+            { x: 2, y: 2, w: 2, h: 2, i: '4' },
+            { x: 4, y: 4, w: 2, h: 2, i: '5' }
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 200);
+          const dbDashboard = db.get('dashboards')
+            .find({ name: 'three' })
+            .value();
+
+          assert.equal(dbDashboard.name, 'three');
+          assert.equal(dbDashboard.description, '3 3 3');
+          assert.deepEqual(dbDashboard.grid, [
+            { x: 0, y: 0, w: 2, h: 2, i: '3' },
+            { x: 2, y: 2, w: 2, h: 2, i: '4' },
+            { x: 4, y: 4, w: 2, h: 2, i: '5' }
+          ]);
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/three')
+        .send({
+          description: '123123'
+        })
+        .then((res) => {
+          assert.equal(res.status, 401);
+          assert.deepEqual(res.body, {});
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/three')
+        .set('access-token', getUserToken(db, 'user'))
+        .send({
+          description: '123123'
+        })
+        .then((res) => {
+          assert.equal(res.status, 403);
+          assert.deepEqual(res.body, {});
+        });
+
+      await request(serverData.app)
+        .put('/api/dashboards/three')
+        .set('access-token', getUserToken(db, 'configure'))
+        .send({
+          description: '123123'
+        })
+        .then((res) => {
+          assert.equal(res.status, 200);
         });
     });
   });

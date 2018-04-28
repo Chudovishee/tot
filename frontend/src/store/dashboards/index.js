@@ -1,24 +1,27 @@
+import Vue from 'vue';
 import { AUTH_API_CALL } from '@/store/users';
 
 import {
   getDashboards,
   addDashboard,
+  editDashboard,
   getDashboard
 } from './api';
 
 export const FETCH_DASHBOARDS = 'FETCH_DASHBOARDS';
 export const ADD_DASHBOARD = 'ADD_DASHBOARD';
-export const OPEN_DASHBOARD = 'OPEN_DASHBOARD';
+export const FETCH_DASHBOARD = 'FETCH_DASHBOARD';
+export const EDIT_DASHBOARD = 'EDIT_DASHBOARD';
 
 export const FETCH_DASHBOARDS_SUCCESS = 'FETCH_DASHBOARDS_SUCCESS';
 export const FETCH_DASHBOARDS_ERROR = 'FETCH_DASHBOARDS_ERROR';
-export const OPEN_DASHBOARD_SUCCESS = 'OPEN_DASHBOARD_SUCCESS';
-export const OPEN_DASHBOARD_ERROR = 'OPEN_DASHBOARD_ERROR';
+export const FETCH_DASHBOARD_SUCCESS = 'FETCH_DASHBOARD_SUCCESS';
+export const FETCH_DASHBOARD_ERROR = 'FETCH_DASHBOARD_ERROR';
 
 export default {
   state: {
     list: [],
-    open: null
+    open: {}
   },
   mutations: {
     [FETCH_DASHBOARDS_SUCCESS](state, payload) {
@@ -27,11 +30,11 @@ export default {
     [FETCH_DASHBOARDS_ERROR](state) {
       state.list = [];
     },
-    [OPEN_DASHBOARD_SUCCESS](state, payload) {
-      state.open = payload;
+    [FETCH_DASHBOARD_SUCCESS](state, { name, data }) {
+      Vue.set(state.open, name, data);
     },
-    [OPEN_DASHBOARD_ERROR](state) {
-      state.open = null;
+    [FETCH_DASHBOARD_ERROR](state, { name }) {
+      Vue.set(state.open, name, null);
     }
   },
   actions: {
@@ -58,13 +61,26 @@ export default {
           throw error;
         });
     },
-    [OPEN_DASHBOARD]({ dispatch, commit }, dashboard) {
-      return dispatch(AUTH_API_CALL, getDashboard(dashboard))
+    [FETCH_DASHBOARD]({ dispatch, commit }, name) {
+      return dispatch(AUTH_API_CALL, getDashboard(name))
         .then((response) => {
-          commit(OPEN_DASHBOARD_SUCCESS, response.data);
+          commit(FETCH_DASHBOARD_SUCCESS, {
+            name,
+            data: response.data
+          });
         })
         .catch((error) => {
-          commit(OPEN_DASHBOARD_ERROR, error);
+          commit(FETCH_DASHBOARD_ERROR, { name, error });
+          throw error;
+        });
+    },
+    [EDIT_DASHBOARD]({ dispatch }, { name, data }) {
+      const newName = (data.name && name !== data.name) ? data.name : name;
+      return dispatch(AUTH_API_CALL, editDashboard(name, data))
+        .then(() => dispatch(FETCH_DASHBOARDS))
+        .then(() => dispatch(FETCH_DASHBOARD, newName))
+        .catch((error) => {
+          dispatch(FETCH_DASHBOARD, newName);
           throw error;
         });
     }

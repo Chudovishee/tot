@@ -59,7 +59,6 @@ function dashboardsApi(db, logger) {
 
     if (dashboard.value()) {
       const newDashboard = new Dashboard(pickDashboardData(req.body));
-      debugger;
       const errors = newDashboard.editValidate(db, req.params.dashboard);
 
       if (!errors || Object.keys(errors).length === 0) {
