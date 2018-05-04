@@ -2,11 +2,24 @@
   <div class="tot-dashboard">
     <template v-if="dashboardData">
       <div class="tot-dashboard__head">
-        <div class="tot-dashboard__name">{{ dashboardData.name }}</div>
-        <div v-if="dashboardData.description" class="tot-dashboard__description">
-          {{ dashboardData.description }}
+        <div class="tot-dashboard__title">
+          <div class="tot-dashboard__name">{{ dashboardData.name }}</div>
+          <div v-if="dashboardData.description" class="tot-dashboard__description">
+            {{ dashboardData.description }}
+          </div>
+          <i class="el-icon-edit" @click="edit"/>
         </div>
-        <i class="el-icon-edit" @click="edit"/>
+
+        <div class="tot-dashboard__actions">
+          <el-button
+            type="text"
+            icon="el-icon-circle-plus"
+            @click="addPlot">
+            Add plot
+          </el-button>
+
+          <el-button type="text" icon="el-icon-delete">Remove dashboard</el-button>
+        </div>
       </div>
 
       <grid-layout
@@ -19,7 +32,8 @@
         :is-mirrored="false"
         :vertical-compact="true"
         :margin="[16, 16]"
-        :use-css-transforms="true">
+        :use-css-transforms="true"
+        @layout-updated="layoutUpdatedEvent">
 
         <grid-item v-for="item in grid"
           :key="item.i"
@@ -38,23 +52,34 @@
 
 <script>
 import { GridLayout, GridItem } from 'vue-grid-layout';
+import { cloneDeep, isEqual, map, pick } from 'lodash';
+
+import randomHex from '@/utils/randomHex';
+import { EDIT_DASHBOARD } from '@/store/dashboards';
+
+import TotDashboardPlot from './plot';
+
+function pickGrid(grid) {
+  return map(grid, item => pick(item, ['i', 'x', 'y', 'w', 'h']));
+}
 
 export default {
-  name: 'TotDashboardsGrid',
+  name: 'TotDashboard',
   components: {
     GridLayout,
-    GridItem
+    GridItem,
+    TotDashboardPlot
   },
   props: {
     dashboard: String
   },
   data() {
     return {
-      grid: [
-        { i: '0', x: 0, y: 0, w: 4, h: 2 },
-        { i: '1', x: 1, y: 0, w: 4, h: 2 }
-      ]
+      grid: []
     };
+  },
+  mounted() {
+    this.grid = cloneDeep(this.dashboardData.grid);
   },
   computed: {
     dashboardData() {
@@ -64,6 +89,34 @@ export default {
   methods: {
     edit() {
       this.$emit('editDashboard');
+    },
+    layoutUpdatedEvent(grid) {
+      if (!isEqual(pickGrid(grid), pickGrid(this.dashboardData.grid))) {
+        this.saveDashboard();
+      }
+    },
+    addPlot() {
+      this.grid.push({ i: randomHex(8), x: 0, y: 0, w: 8, h: 2 });
+      this.saveDashboard();
+    },
+    saveDashboard() {
+      this.$nextTick(() => {
+        this.$store.dispatch(EDIT_DASHBOARD, {
+          name: this.dashboard,
+          data: { grid: this.grid }
+        })
+          .catch((error) => {
+            this.$notify.error({
+              title: 'Fail to save dashboard grid',
+              message: error.toString()
+            });
+          });
+      });
+    }
+  },
+  watch: {
+    dashboardData(data) {
+      this.grid = cloneDeep(data.grid);
     }
   }
 };
@@ -87,7 +140,12 @@ export default {
   }
 
   &__head {
+    display: flex;
     margin: 16px 16px 0 16px;
+  }
+
+  &__title {
+    flex: 1 0 auto;
   }
 
   &__name {
