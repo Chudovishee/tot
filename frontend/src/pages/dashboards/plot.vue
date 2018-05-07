@@ -1,24 +1,43 @@
 <template>
-  <grid-item
-    :x="item.x"
-    :y="item.y"
-    :w="item.w"
-    :h="item.h"
-    :i="item.i">
-    <el-card>{{item.i}}</el-card>
-  </grid-item>
+  <el-card class="tot-dashboard-plot">
+    <tot-plot ref="plot"/>
+  </el-card>
 </template>
 
 <script>
-import { GridItem } from 'vue-grid-layout';
+import TotPlot from '@/components/plot';
 
 export default {
   name: 'TotDashboardPlot',
   components: {
-    GridItem
+    TotPlot
+  },
+  data() {
+    return {
+    };
   },
   props: {
     item: Object
+  },
+  methods: {
+    resize() {
+      this.$refs.plot.resize();
+    }
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.tot-dashboard-plot {
+  width: 100%;
+  height: 100%;
+
+  /deep/ {
+    .el-card__body,
+    .tot-plot {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+</style>

@@ -15,3 +15,7 @@ export function getDashboard(dashboard) {
 export function editDashboard(dashboard, payload) {
   return axios.put(`/api/dashboards/${dashboard}`, payload);
 }
+
+export function removeDashboard(dashboard) {
+  return axios.delete(`/api/dashboards/${dashboard}`);
+}

@@ -9,9 +9,10 @@
       @addDashboard="openAddDashboard"/>
 
     <tot-dashboard
-      v-if="$route.params.dashboard"
+      v-if="firstDashboard && $route.params.dashboard"
       :dashboard="$route.params.dashboard"
-      @editDashboard="openEditDashboard"/>
+      @editDashboard="openEditDashboard"
+      @removeDashboard="removeDashboard"/>
 
     <tot-dashboards-edit
       :dashboard="editDashboard"
@@ -22,7 +23,8 @@
 <script>
 import {
   FETCH_DASHBOARDS,
-  FETCH_DASHBOARD
+  FETCH_DASHBOARD,
+  REMOVE_DASHBOARD
 } from '@/store/dashboards';
 import store from '@/store';
 
@@ -90,6 +92,14 @@ export default {
     openEditDashboard() {
       this.editVisible = true;
       this.editDashboard = this.$route.params.dashboard;
+    },
+    removeDashboard() {
+      this.$store.dispatch(REMOVE_DASHBOARD, this.$route.params.dashboard)
+        .then(() => this.$router.push({ name: 'dashboards' }))
+        .catch((error) => {
+          this.$router.push({ name: 'dashboards' });
+          throw error;
+        });
     }
   }
 };

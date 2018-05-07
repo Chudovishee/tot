@@ -19,7 +19,8 @@
     "vuex": "^3.0.1",
     "lodash": "^4.17.5",
     "moment": "^2.21.0",
-    "axios": "^0.17.1"
+    "axios": "^0.17.1",
+    "plotly.js": "^1.37.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

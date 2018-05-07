@@ -80,6 +80,25 @@ function dashboardsApi(db, logger) {
     }
   });
 
+  router.delete('/:dashboard', secure.CONFIGURE, (req, res) => {
+    const dashboard = new Dashboard({ name: req.params.dashboard })
+      .fetch(db);
+
+    if (dashboard.value()) {
+      new Dashboards().fetch(db)
+        .remove(dashboard)
+        .write()
+        .then(() => res.status(200).end())
+        .catch((error) => {
+          logger.error(`Unable delete dashboard with db error: ${error}`);
+          return res.status(500).end();
+        });
+    }
+    else {
+      res.status(404).end();
+    }
+  });
+
   return router;
 }
 

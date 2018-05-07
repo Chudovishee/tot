@@ -18,7 +18,12 @@
             Add plot
           </el-button>
 
-          <el-button type="text" icon="el-icon-delete">Remove dashboard</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            @click="remove">
+            Remove dashboard
+          </el-button>
         </div>
       </div>
 
@@ -41,9 +46,9 @@
           :y="item.y"
           :w="item.w"
           :h="item.h"
-          :i="item.i">
-
-          <el-card>{{item.i}}</el-card>
+          :i="item.i"
+          @resized="resized">
+          <tot-dashboard-plot :item="item" ref="items"/>
         </grid-item>
       </grid-layout>
     </template>
@@ -65,7 +70,7 @@
 
 <script>
 import { GridLayout, GridItem } from 'vue-grid-layout';
-import { cloneDeep, isEqual, map, pick } from 'lodash';
+import { cloneDeep, isEqual, map, pick, findIndex } from 'lodash';
 
 import randomHex from '@/utils/randomHex';
 import { EDIT_DASHBOARD } from '@/store/dashboards';
@@ -105,7 +110,10 @@ export default {
     edit() {
       this.$emit('editDashboard');
     },
-    layoutUpdatedEvent(grid) {
+    remove() {
+      this.$emit('removeDashboard');
+    },
+    layoutUpdatedEvent(grid) {      
       if (!isEqual(pickGrid(grid), pickGrid(this.dashboardData.grid))) {
         this.saveDashboard();
       }
@@ -127,6 +135,10 @@ export default {
             });
           });
       });
+    },
+    resized(i, h, w, hpx, wpx) {
+      const index = findIndex(this.grid, { i });
+      this.$refs.items[index].resize();
     }
   },
   watch: {

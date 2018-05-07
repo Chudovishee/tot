@@ -401,5 +401,37 @@ describe('dashboards api', () => {
           assert.equal(res.status, 200);
         });
     });
+
+    it('delete', async () => {
+      await request(serverData.app)
+        .delete('/api/dashboards/one')
+        .set('access-token', getUserToken(db, 'user'))
+        .then((res) => {
+          assert.equal(res.status, 403);
+        });
+
+      await request(serverData.app)
+        .delete('/api/dashboards/one')
+        .set('access-token', getUserToken(db, 'admin'))
+        .then((res) => {
+          assert.equal(res.status, 200);
+          assert.equal(db.get('dashboards').find({ name: 'one' }).value(), undefined);
+        });
+
+      await request(serverData.app)
+        .delete('/api/dashboards/two')
+        .set('access-token', getUserToken(db, 'configure'))
+        .then((res) => {
+          assert.equal(res.status, 200);
+          assert.equal(db.get('dashboards').find({ name: 'two' }).value(), undefined);
+        });
+
+      await request(serverData.app)
+        .delete('/api/dashboards/one')
+        .set('access-token', getUserToken(db, 'admin'))
+        .then((res) => {
+          assert.equal(res.status, 404);
+        });
+    });
   });
 });

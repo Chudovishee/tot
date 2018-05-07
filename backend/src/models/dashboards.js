@@ -24,6 +24,16 @@ class Dashboards extends BaseCollection {
     return this;
   }
 
+  remove(predicate) {
+    if (predicate instanceof Dashboard) {
+      this.data = this.data.remove({ name: predicate.get('name').value() });
+    }
+    else {
+      this.data = this.data.remove(predicate);
+    }
+    return this;
+  }
+
   publish() {
     return this.data.map(dashboard => new Dashboard(dashboard).shortPublish()).value();
   }
