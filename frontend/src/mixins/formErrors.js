@@ -14,10 +14,10 @@ export default {
       });
       this.otherErrors = null;
     },
-    handleError(response) {
+    handleError(error) {
       let other = [];
-      if (response.data) {
-        each(response.data, (errors, field) => {
+      if (error.response && error.response.data) {
+        each(error.response.data, (errors, field) => {
           if (this.errors[field] !== undefined) {
             this.errors[field] = errors.join('; ');
           }
@@ -29,8 +29,11 @@ export default {
           this.otherErrors = other.join('; ');
         }
       }
-      else if (response.statusText) {
-        this.otherErrors = response.statusText;
+      else if (error.response && error.response.statusText) {
+        this.otherErrors = error.response.statusText;
+      }
+      else if (error.message) {
+        this.otherErrors = error.message;
       }
       else {
         this.otherErrors = 'Unknown error';

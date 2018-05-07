@@ -47,6 +47,19 @@
         </grid-item>
       </grid-layout>
     </template>
+
+    <tot-error
+      v-else
+      class="tot-dashboard-error">
+      <template slot="head">
+        <i class="el-icon-warning"/>
+      </template>
+      <template slot="title">Dashboard not found.</template>
+
+      <template slot="message">
+        Please select other dashboard or create new
+      </template>
+    </tot-error>
   </div>
 </template>
 
@@ -56,6 +69,7 @@ import { cloneDeep, isEqual, map, pick } from 'lodash';
 
 import randomHex from '@/utils/randomHex';
 import { EDIT_DASHBOARD } from '@/store/dashboards';
+import TotError from '@/components/error';
 
 import TotDashboardPlot from './plot';
 
@@ -68,7 +82,8 @@ export default {
   components: {
     GridLayout,
     GridItem,
-    TotDashboardPlot
+    TotDashboardPlot,
+    TotError
   },
   props: {
     dashboard: String
@@ -79,7 +94,7 @@ export default {
     };
   },
   mounted() {
-    this.grid = cloneDeep(this.dashboardData.grid);
+    this.grid = this.dashboardData ? cloneDeep(this.dashboardData.grid) : [];
   },
   computed: {
     dashboardData() {
@@ -116,7 +131,7 @@ export default {
   },
   watch: {
     dashboardData(data) {
-      this.grid = cloneDeep(data.grid);
+      this.grid = data ? cloneDeep(data.grid) : [];
     }
   }
 };

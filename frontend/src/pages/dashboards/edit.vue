@@ -113,7 +113,7 @@ export default {
                 this.$router.push({ name: 'dashboards', params: { dashboard: this.dashboardForm.name } });
               }
             })
-            .catch(error => this.handleError(error.response));
+            .catch(error => this.handleError(error));
         }
       });
     }

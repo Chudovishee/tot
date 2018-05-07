@@ -54,7 +54,7 @@ export default {
     saveUser() {
       this.clearErrors();
       this.$store.dispatch(EDIT_USER, { name: this.value.name, ...this.editUserForm })
-        .catch(error => this.handleError(error.response));
+        .catch(error => this.handleError(error));
     }
   },
   watch: {

@@ -75,7 +75,7 @@ export default {
   actions: {
     [AUTH_API_CALL]({ commit }, apiCall) {
       return apiCall.catch((error) => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           commit(LOGOUT_SUCCESS);
         }
         throw error;

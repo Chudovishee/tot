@@ -9,6 +9,7 @@
       @addDashboard="openAddDashboard"/>
 
     <tot-dashboard
+      v-if="$route.params.dashboard"
       :dashboard="$route.params.dashboard"
       @editDashboard="openEditDashboard"/>
 
@@ -48,19 +49,19 @@ export default {
     store.dispatch(FETCH_DASHBOARDS)
       .then(() => {
         if (store.state.dashboards.list[0] && !to.params.dashboard) {
-          next({ name: 'dashboards', params: { dashboard: store.state.dashboards.list[0].name } });
+          return next({ name: 'dashboards', params: { dashboard: store.state.dashboards.list[0].name } });
         }
-        else if (to.params.dashboard) {
-          store.dispatch(FETCH_DASHBOARD, to.params.dashboard)
-            .then(() => next())
-            .catch((error) => {
-              next();
-              throw error;
-            });
+
+        if (to.params.dashboard) {
+          return store.dispatch(FETCH_DASHBOARD, to.params.dashboard)
+            .then(() => next());
         }
-        else {
-          next();
-        }
+
+        return next();
+      })
+      .catch((error) => {
+        next();
+        throw error;
       });
   },
   beforeRouteUpdate(to, from, next) {
