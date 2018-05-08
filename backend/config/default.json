@@ -10,5 +10,7 @@
 
   "db": "/var/lib/tot/db.json",
 
-  "user_token_max_age": 2500000000
+  "user_token_max_age": 2500000000,
+
+  "prometheus": "http://127.0.0.1:9090"
 }

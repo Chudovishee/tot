@@ -9,6 +9,7 @@ FULL_VERSION="${VERSION}-${REVISION}"
 echo "debug: ${FULL_VERSION}"
 
 mkdir -p "$(pwd)/data/var/lib/tot"
+mkdir -p "$(pwd)/data/var/lib/prometheus"
 mkdir -p "$(pwd)/data/var/log/tot"
 mkdir -p "$(pwd)/data/etc/tot/backend"
 mkdir -p "$(pwd)/data/etc/tot/system"
@@ -35,6 +36,7 @@ docker run -it --rm \
   -p 9229:9229 \
   -p 9090:9090 \
   -v "$(pwd)/data/var/lib/tot":"/var/lib/tot" \
+  -v "$(pwd)/data/var/lib/prometheus":"/var/lib/prometheus" \
   -v "$(pwd)/data/var/log/tot":"/var/log/tot" \
   -v "$(pwd)/data/etc/tot/backend":"/etc/tot/backend" \
   -v "$(pwd)/data/etc/tot/system":"/etc/tot/system" \

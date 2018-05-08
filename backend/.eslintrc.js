@@ -12,6 +12,7 @@ module.exports = {
     'brace-style': ['error', 'stroustrup'],
     'no-await-in-loop': 0,
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'object-curly-newline': ["error", { "consistent": true }]
+    'object-curly-newline': ["error", { "consistent": true }],
+    'function-paren-newline': 0
   }
 };
