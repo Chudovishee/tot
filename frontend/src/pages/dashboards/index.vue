@@ -97,7 +97,10 @@ export default {
       this.$store.dispatch(REMOVE_DASHBOARD, this.$route.params.dashboard)
         .then(() => this.$router.push({ name: 'dashboards' }))
         .catch((error) => {
-          this.$router.push({ name: 'dashboards' });
+          this.$notify.error({
+            title: 'Fail to delete dashboard',
+            message: error.toString()
+          });
           throw error;
         });
     }

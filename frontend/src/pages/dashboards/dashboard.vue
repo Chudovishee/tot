@@ -7,10 +7,13 @@
           <div v-if="dashboardData.description" class="tot-dashboard__description">
             {{ dashboardData.description }}
           </div>
-          <i class="el-icon-edit" @click="edit"/>
+
+          <i v-if="$store.getters.isConfigure"
+            class="el-icon-edit"
+            @click="edit"/>
         </div>
 
-        <div class="tot-dashboard__actions">
+        <div class="tot-dashboard__actions" v-if="$store.getters.isConfigure">
           <el-button
             type="text"
             icon="el-icon-circle-plus"
@@ -18,12 +21,25 @@
             Add plot
           </el-button>
 
-          <el-button
-            type="text"
-            icon="el-icon-delete"
-            @click="remove">
-            Remove dashboard
-          </el-button>
+
+          <el-popover placement="bottom">
+            <el-button
+              slot="reference"
+              type="text"
+              icon="el-icon-delete">
+              Remove dashboard
+            </el-button>
+
+            <div class="tot-dashboard__delete-confirm">
+              <div class="tot-dashboard__delete-confirm-text">Are you sure to delete?</div>
+              <div class="tot-dashboard__delete-confirm-button">
+                <el-button
+                  type="danger"
+                  size="mini"
+                  @click="remove">Yes</el-button>
+              </div>
+            </div>
+          </el-popover>
         </div>
       </div>
 
@@ -32,8 +48,8 @@
         :layout="grid"
         :col-num="8"
         :row-height="128"
-        :is-draggable="true"
-        :is-resizable="true"
+        :is-draggable="$store.getters.isConfigure"
+        :is-resizable="$store.getters.isConfigure"
         :is-mirrored="false"
         :vertical-compact="true"
         :margin="[16, 16]"
@@ -187,6 +203,15 @@ export default {
     display: inline-block;
     color: #909399;
     line-height: 32px;
+    margin-right: 8px;
+  }
+
+  &__delete-confirm {
+    display: flex;
+  }
+
+  &__delete-confirm-text {
+    line-height: 28px;
     margin-right: 8px;
   }
 }

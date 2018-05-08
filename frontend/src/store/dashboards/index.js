@@ -19,7 +19,6 @@ export const FETCH_DASHBOARDS_SUCCESS = 'FETCH_DASHBOARDS_SUCCESS';
 export const FETCH_DASHBOARDS_ERROR = 'FETCH_DASHBOARDS_ERROR';
 export const FETCH_DASHBOARD_SUCCESS = 'FETCH_DASHBOARD_SUCCESS';
 export const FETCH_DASHBOARD_ERROR = 'FETCH_DASHBOARD_ERROR';
-export const REMOVE_DASHBOARD_DONE = 'REMOVE_DASHBOARD_DONE';
 
 export default {
   state: {
@@ -37,9 +36,6 @@ export default {
       Vue.set(state.open, name, data);
     },
     [FETCH_DASHBOARD_ERROR](state, { name }) {
-      Vue.set(state.open, name, null);
-    },
-    [REMOVE_DASHBOARD_DONE](state, name) {
       Vue.set(state.open, name, null);
     }
   },
@@ -90,10 +86,9 @@ export default {
           throw error;
         });
     },
-    [REMOVE_DASHBOARD]({ dispatch, commit }, name) {
-      dispatch(AUTH_API_CALL, removeDashboard(name))
+    [REMOVE_DASHBOARD]({ dispatch }, name) {
+      return dispatch(AUTH_API_CALL, removeDashboard(name))
         .then(() => dispatch(FETCH_DASHBOARDS))
-        .then(() => commit(REMOVE_DASHBOARD_DONE, name))
         .catch((error) => {
           dispatch(FETCH_DASHBOARDS);
           throw error;
