@@ -25,7 +25,10 @@ export default {
 
     const layout = {
       autosize: true,
-      // margin: { l: 0, r: 0, t: 0, b: 0 }
+      margin: { l: 40, r: 0, t: 0, b: 40 },
+      legend: {
+        orientation: 'h'
+      }
     };
     const options = {
       scrollZoom: true,
@@ -48,7 +51,6 @@ export default {
 
 <style lang="scss" scoped>
 .tot-plot {
-  width: 100%;
-  height: 100%;
+
 }
 </style>

@@ -63,6 +63,7 @@
           :w="item.w"
           :h="item.h"
           :i="item.i"
+          drag-allow-from=".tot-dashboard-plot__head"
           @resized="resized">
           <tot-dashboard-plot :item="item" ref="items"/>
         </grid-item>
@@ -168,11 +169,6 @@ export default {
 <style lang="scss" scoped>
 .tot-dashboard {
   /deep/ {
-    .el-card {
-      width: 100%;
-      height: 100%;
-    }
-
     .vue-grid-placeholder {
       background: #ccc;
     }
