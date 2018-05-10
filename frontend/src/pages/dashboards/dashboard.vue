@@ -22,7 +22,7 @@
           </el-button>
 
 
-          <el-popover placement="bottom">
+          <el-popover placement="bottom" v-model="removePopupVisible">
             <el-button
               slot="reference"
               type="text"
@@ -44,6 +44,7 @@
       </div>
 
       <grid-layout
+        v-if="grid.length"
         class="tot-dashboard__grid"
         :layout="grid"
         :col-num="8"
@@ -68,6 +69,8 @@
           <tot-dashboard-plot :item="item" ref="items"/>
         </grid-item>
       </grid-layout>
+
+      <tot-dashboard-empty v-else/>
     </template>
 
     <tot-error
@@ -94,6 +97,7 @@ import { EDIT_DASHBOARD } from '@/store/dashboards';
 import TotError from '@/components/error';
 
 import TotDashboardPlot from './plot';
+import TotDashboardEmpty from './dashboardEmpty';
 
 function pickGrid(grid) {
   return map(grid, item => pick(item, ['i', 'x', 'y', 'w', 'h']));
@@ -105,14 +109,16 @@ export default {
     GridLayout,
     GridItem,
     TotDashboardPlot,
-    TotError
+    TotError,
+    TotDashboardEmpty
   },
   props: {
     dashboard: String
   },
   data() {
     return {
-      grid: []
+      grid: [],
+      removePopupVisible: false
     };
   },
   mounted() {
@@ -128,9 +134,10 @@ export default {
       this.$emit('editDashboard');
     },
     remove() {
+      this.removePopupVisible = false;
       this.$emit('removeDashboard');
     },
-    layoutUpdatedEvent(grid) {      
+    layoutUpdatedEvent(grid) {
       if (!isEqual(pickGrid(grid), pickGrid(this.dashboardData.grid))) {
         this.saveDashboard();
       }
@@ -153,7 +160,7 @@ export default {
           });
       });
     },
-    resized(i, h, w, hpx, wpx) {
+    resized(i) {
       const index = findIndex(this.grid, { i });
       this.$refs.items[index].resize();
     }

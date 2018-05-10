@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import users from './users';
 import dashboards from './dashboards';
+import stat from './stat';
 
 Vue.use(Vuex);
 
@@ -12,7 +13,8 @@ export default new Vuex.Store({
   },
   modules: {
     users,
-    dashboards
+    dashboards,
+    stat
   },
   plugins: [],
   strict: (process.env.NODE_ENV !== 'production'),
