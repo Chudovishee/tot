@@ -12,6 +12,21 @@ const axios = Axios.create({
   }
 });
 
+const availableQueries = [
+  {
+    key: 'cpu',
+    name: 'CPU load',
+    description: 'Average CPU load',
+    query: '100 - avg(rate(node_cpu{mode="idle"}[1m])) * 100',
+  },
+  {
+    key: 'mem',
+    name: 'Memory usage',
+    description: 'Memory usage',
+    query: 'node_memory_MemTotal - node_memory_MemAvailable'
+  }
+];
+
 function putNulls(data, start, end, step) {
   return map(data, (row) => {
     const resultRow = { metric: row.metric };
@@ -38,7 +53,7 @@ function putNulls(data, start, end, step) {
   });
 }
 
-function Prometheus(options) {
+function queryRange(options) {
   const step = Math.max(Math.round((options.end - options.start) / POINTS), 1);
 
   return axios.get('/api/v1/query_range', {
@@ -58,4 +73,7 @@ function Prometheus(options) {
     });
 }
 
-module.exports = Prometheus;
+module.exports = {
+  queryRange,
+  availableQueries
+};

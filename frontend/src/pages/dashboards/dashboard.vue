@@ -71,6 +71,11 @@
       </grid-layout>
 
       <tot-dashboard-empty v-else/>
+
+      <tot-plot-edit
+        :dashboard="dashboard"
+        :plot="plotEdit"
+        :visible.sync="plotEditVisible"/>
     </template>
 
     <tot-error
@@ -98,6 +103,7 @@ import TotError from '@/components/error';
 
 import TotDashboardPlot from './plot';
 import TotDashboardEmpty from './dashboardEmpty';
+import TotPlotEdit from './plotEdit';
 
 function pickGrid(grid) {
   return map(grid, item => pick(item, ['i', 'x', 'y', 'w', 'h']));
@@ -110,7 +116,8 @@ export default {
     GridItem,
     TotDashboardPlot,
     TotError,
-    TotDashboardEmpty
+    TotDashboardEmpty,
+    TotPlotEdit
   },
   props: {
     dashboard: String
@@ -118,7 +125,9 @@ export default {
   data() {
     return {
       grid: [],
-      removePopupVisible: false
+      removePopupVisible: false,
+      plotEditVisible: false,
+      plotEdit: null
     };
   },
   mounted() {
@@ -143,8 +152,8 @@ export default {
       }
     },
     addPlot() {
-      this.grid.push({ i: randomHex(8), x: 0, y: 0, w: 8, h: 2 });
-      this.saveDashboard();
+      this.plotEditVisible = true;
+      this.plotEdit = null;
     },
     saveDashboard() {
       this.$nextTick(() => {
@@ -176,6 +185,11 @@ export default {
 <style lang="scss" scoped>
 .tot-dashboard {
   /deep/ {
+    .vue-grid-layout,
+    .vue-grid-item {
+      transition: none;
+    }
+
     .vue-grid-placeholder {
       background: #ccc;
     }

@@ -1,13 +1,8 @@
-const { each, keys } = require('lodash');
+const { each, pick, map } = require('lodash');
 const express = require('express');
 
-const Prometheus = require('../services/prometheus');
+const { queryRange, availableQueries } = require('../services/prometheus');
 const secure = require('../services/secure');
-
-const queries = {
-  cpu: '100 - avg(rate(node_cpu{mode="idle"}[1m])) * 100',
-  mem: 'node_memory_MemTotal - node_memory_MemAvailable'
-};
 
 function statApi(logger) {
   const router = express.Router();
@@ -18,7 +13,7 @@ function statApi(logger) {
       const end = parseFloat(req.query.end, 10);
 
       if (start && end && end > start) {
-        Prometheus({ query, start, end })
+        queryRange({ query, start, end })
           .then((prometheusResponse) => {
             res.status(200).json(prometheusResponse);
           })
@@ -34,11 +29,11 @@ function statApi(logger) {
   }
 
   router.get('/', secure.USER, (req, res) => {
-    res.json(keys(queries));
+    res.json(map(availableQueries, query => pick(query, ['key', 'name', 'description'])));
   });
 
-  each(queries, (query, name) => {
-    router.get(`/${name}`, secure.USER, queryHandler(query));
+  each(availableQueries, (query) => {
+    router.get(`/${query.key}`, secure.USER, queryHandler(query.query));
   });
 
   return router;

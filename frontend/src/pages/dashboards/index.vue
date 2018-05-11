@@ -16,7 +16,7 @@
 
     <tot-dashboards-edit
       :dashboard="editDashboard"
-      :visible.sync="editVisible"/>
+      :visible.sync="editDashboardVisible"/>
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
   },
   data() {
     return {
-      editVisible: false,
+      editDashboardVisible: false,
       editDashboard: null
     };
   },
@@ -86,11 +86,11 @@ export default {
   },
   methods: {
     openAddDashboard() {
-      this.editVisible = true;
+      this.editDashboardVisible = true;
       this.editDashboard = null;
     },
     openEditDashboard() {
-      this.editVisible = true;
+      this.editDashboardVisible = true;
       this.editDashboard = this.$route.params.dashboard;
     },
     removeDashboard() {

@@ -9,7 +9,7 @@ const Dashboard = require('../models/dashboard');
 function pickDashboardData(data) {
   const result = _.pick(data, ['name', 'description', 'grid']);
   if (result.grid) {
-    result.grid = _.map(result.grid, item => _.pick(item, ['i', 'x', 'y', 'w', 'h']));
+    result.grid = _.map(result.grid, item => _.pick(item, ['i', 'x', 'y', 'w', 'h', 'type', 'sources']));
   }
   return result;
 }

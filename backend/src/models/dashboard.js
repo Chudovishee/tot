@@ -1,6 +1,30 @@
+const { merge, map } = require('lodash');
+
 const validate = require('../utils/validate');
+const { availableQueries } = require('../services/prometheus');
 
 const Base = require('./base');
+
+const baseValidateRules = {
+  name: {
+    format: {
+      pattern: /^[\w]{1,20}$/,
+      message: 'must be string with 1-20 characters'
+    }
+  },
+  description: {
+    format: {
+      pattern: /^[\w ]{0,64}$/,
+      message: 'must be string with 0-64 characters'
+    }
+  },
+  grid: {
+    dashboardGrid: {
+      availableTypes: ['graph', 'value'],
+      availableSources: map(availableQueries, 'key')
+    }
+  }
+};
 
 class Dashboard extends Base {
   fetch(db) {
@@ -20,24 +44,11 @@ class Dashboard extends Base {
   createValidate(db) {
     const fields = this.data.value();
 
-    let errors = validate(fields, {
+    let errors = validate(fields, merge({}, baseValidateRules, {
       name: {
-        presence: true,
-        format: {
-          pattern: /^[\w]{1,20}$/,
-          message: 'must be string with 1-20 characters'
-        }
-      },
-      description: {
-        format: {
-          pattern: /^[\w ]{0,64}$/,
-          message: 'must be string with 0-64 characters'
-        }
-      },
-      grid: {
-        dashboardGrid: true
+        presence: true
       }
-    });
+    }));
 
     if ((!errors || Object.keys(errors).length === 0) &&
       db.get('dashboards').find({ name: fields.name }).value()) {
@@ -52,23 +63,7 @@ class Dashboard extends Base {
   editValidate(db, oldName) {
     const fields = this.data.value();
 
-    let errors = validate(fields, {
-      name: {
-        format: {
-          pattern: /^[\w]{1,20}$/,
-          message: 'must be string with 1-20 characters'
-        }
-      },
-      description: {
-        format: {
-          pattern: /^[\w ]{0,64}$/,
-          message: 'must be string with 0-64 characters'
-        }
-      },
-      grid: {
-        dashboardGrid: true
-      }
-    });
+    let errors = validate(fields, baseValidateRules);
 
     if ((!errors || Object.keys(errors).length === 0) &&
       fields.name !== oldName &&

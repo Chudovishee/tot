@@ -122,8 +122,8 @@ describe('dashboards api', () => {
           name: 'three',
           description: 'three three three',
           grid: [
-            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0' },
-            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1' }
+            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0', type: 'graph', sources: ['cpu', 'mem'] },
+            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1', type: 'value', sources: ['cpu'] }
           ],
           more: 'more'
         })
@@ -137,8 +137,8 @@ describe('dashboards api', () => {
           assert.equal(dbDashboard.name, 'three');
           assert.equal(dbDashboard.description, 'three three three');
           assert.deepEqual(dbDashboard.grid, [
-            { x: 0, y: 0, w: 2, h: 2, i: '0' },
-            { x: 2, y: 2, w: 2, h: 2, i: '1' }
+            { x: 0, y: 0, w: 2, h: 2, i: '0', type: 'graph', sources: ['cpu', 'mem'] },
+            { x: 2, y: 2, w: 2, h: 2, i: '1', type: 'value', sources: ['cpu'] }
           ]);
           assert.notExists(dbDashboard.more);
         });
@@ -194,6 +194,86 @@ describe('dashboards api', () => {
           assert.equal(res.status, 400);
           assert.deepEqual(res.body, {
             grid: ['Grid must have items with unique "i" properties']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0, type: 'graph', sources: ['one', 'mem'] },
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid have plot with unsupported source']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0, type: 'graph', sources: [] },
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid have plot with unsupported source']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0, type: 'graph' },
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid have plot with unsupported source']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0, type: 'one two', sources: ['mem'] },
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid have plot with unsupported type']
+          });
+        });
+
+      await request(serverData.app)
+        .post('/api/dashboards')
+        .set('access-token', getUserToken(db, 'admin'))
+        .send({
+          name: 'one',
+          grid: [
+            { i: '0', x: 0, y: 0, w: 0, h: 0, sources: ['mem'] },
+          ]
+        })
+        .then((res) => {
+          assert.equal(res.status, 400);
+          assert.deepEqual(res.body, {
+            grid: ['Grid have plot with unsupported type']
           });
         });
 
@@ -292,9 +372,9 @@ describe('dashboards api', () => {
           name: 'three',
           description: 'three three three',
           grid: [
-            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0' },
-            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1' },
-            { x: 4, y: 4, w: 2, h: 2, k: 'kkk', i: '2' }
+            { x: 0, y: 0, w: 2, h: 2, k: 'kkk', i: '0', type: 'graph', sources: ['cpu'] },
+            { x: 2, y: 2, w: 2, h: 2, k: 'kkk', i: '1', type: 'graph', sources: ['cpu'] },
+            { x: 4, y: 4, w: 2, h: 2, k: 'kkk', i: '2', type: 'graph', sources: ['cpu'] }
           ],
           more: 'more'
         })
@@ -307,9 +387,9 @@ describe('dashboards api', () => {
           assert.equal(dbDashboard.name, 'three');
           assert.equal(dbDashboard.description, 'three three three');
           assert.deepEqual(dbDashboard.grid, [
-            { x: 0, y: 0, w: 2, h: 2, i: '0' },
-            { x: 2, y: 2, w: 2, h: 2, i: '1' },
-            { x: 4, y: 4, w: 2, h: 2, i: '2' }
+            { x: 0, y: 0, w: 2, h: 2, i: '0', type: 'graph', sources: ['cpu'] },
+            { x: 2, y: 2, w: 2, h: 2, i: '1', type: 'graph', sources: ['cpu'] },
+            { x: 4, y: 4, w: 2, h: 2, i: '2', type: 'graph', sources: ['cpu'] }
           ]);
           assert.notExists(dbDashboard.more);
         });
@@ -339,9 +419,9 @@ describe('dashboards api', () => {
           assert.equal(dbDashboard.name, 'three');
           assert.equal(dbDashboard.description, '3 3 3');
           assert.deepEqual(dbDashboard.grid, [
-            { x: 0, y: 0, w: 2, h: 2, i: '0' },
-            { x: 2, y: 2, w: 2, h: 2, i: '1' },
-            { x: 4, y: 4, w: 2, h: 2, i: '2' }
+            { x: 0, y: 0, w: 2, h: 2, i: '0', type: 'graph', sources: ['cpu'] },
+            { x: 2, y: 2, w: 2, h: 2, i: '1', type: 'graph', sources: ['cpu'] },
+            { x: 4, y: 4, w: 2, h: 2, i: '2', type: 'graph', sources: ['cpu'] }
           ]);
         });
 
@@ -350,9 +430,9 @@ describe('dashboards api', () => {
         .set('access-token', getUserToken(db, 'admin'))
         .send({
           grid: [
-            { x: 0, y: 0, w: 2, h: 2, i: '3' },
-            { x: 2, y: 2, w: 2, h: 2, i: '4' },
-            { x: 4, y: 4, w: 2, h: 2, i: '5' }
+            { x: 0, y: 0, w: 2, h: 2, i: '3', type: 'graph', sources: ['mem'] },
+            { x: 2, y: 2, w: 2, h: 2, i: '4', type: 'graph', sources: ['mem'] },
+            { x: 4, y: 4, w: 2, h: 2, i: '5', type: 'graph', sources: ['mem'] }
           ]
         })
         .then((res) => {
@@ -364,9 +444,9 @@ describe('dashboards api', () => {
           assert.equal(dbDashboard.name, 'three');
           assert.equal(dbDashboard.description, '3 3 3');
           assert.deepEqual(dbDashboard.grid, [
-            { x: 0, y: 0, w: 2, h: 2, i: '3' },
-            { x: 2, y: 2, w: 2, h: 2, i: '4' },
-            { x: 4, y: 4, w: 2, h: 2, i: '5' }
+            { x: 0, y: 0, w: 2, h: 2, i: '3', type: 'graph', sources: ['mem'] },
+            { x: 2, y: 2, w: 2, h: 2, i: '4', type: 'graph', sources: ['mem'] },
+            { x: 4, y: 4, w: 2, h: 2, i: '5', type: 'graph', sources: ['mem'] }
           ]);
         });
 
